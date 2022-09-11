@@ -1,10 +1,12 @@
 {
 	"name": "mblaze.express",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"compile": "tsc"
+		"compile": "tsc",
+		"prepub": "npm run compile && copy package.json dist",
+		"pub": "cd dist & npm publish"
 	},
 	"keywords": [],
 	"author": "",
