@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import type { Db as MongoDBDatabaseInstanace } from "mongodb";
+import { Db as MongoDBDatabaseInstanace, ObjectId } from "mongodb";
+import getOperation from "./operations/get";
 import type MiddlewareBody from "./types/MiddlewareBody";
 
 import errorResponse from "./utils/error";
@@ -12,9 +13,10 @@ export default async (db: MongoDBDatabaseInstanace) =>
 				"MongoDB Database instance has to be passed to MBlaze Middleware"
 			);
 
-		const { collection, filters, operation } = req.body as MiddlewareBody;
+		const { collectionName, filters, operation, id } =
+			req.body as MiddlewareBody;
 
-		if (!collection)
+		if (!collectionName)
 			return errorResponse({
 				status: 400,
 				message: "Collection not provided",
@@ -26,6 +28,9 @@ export default async (db: MongoDBDatabaseInstanace) =>
 				message: "Operation not provided",
 				res,
 			});
+
+		if (operation === "get")
+			return getOperation({ collectionName, id, db, res });
 
 		return next();
 	};

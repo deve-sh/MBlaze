@@ -2,7 +2,7 @@ type AtomicOrderBy = { fieldName: string; order?: "asc" | "desc" };
 type OrderBy = AtomicOrderBy | AtomicOrderBy[];
 
 export default interface MiddlewareBody {
-	collection: string;
+	collectionName: string;
 	filters?: Record<string, any>;
 	operation: "get" | "list" | "delete" | "update" | "create";
 	limit?: number;
