@@ -10,4 +10,5 @@ export default interface MiddlewareBody {
 	orderBy?: OrderBy;
 	newData?: Record<string, any>;
 	merge?: boolean;
+	id?: string;
 }
