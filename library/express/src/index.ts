@@ -13,7 +13,7 @@ import updateOperation from "./operations/update";
 import errorResponse from "./utils/error";
 
 // Express Middleware
-export default async (db: MongoDBDatabaseInstanace) =>
+export default (db: MongoDBDatabaseInstanace) =>
 	async (req: Request, res: Response, next: NextFunction): Promise<any> => {
 		if (!db)
 			throw new Error(
