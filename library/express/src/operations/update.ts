@@ -37,7 +37,6 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 				res,
 			});
 
-		dataToUpdate._id = id;
 		docExists = await findById(collectionName, id, db);
 
 		if (docExists) {
