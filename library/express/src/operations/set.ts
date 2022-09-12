@@ -35,16 +35,16 @@ const setOperation = async (args: SetOperationArgs) => {
 			updatedAt: new Date(),
 		};
 
-		let docAlreadyExists: any = false;
+		let docAlreadyExists = false;
 		if (id) {
 			dataToInsert._id = id;
-			docAlreadyExists = await findById(collectionName, id, db);
+			docAlreadyExists = !!(await findById(collectionName, id, db));
 
 			if (docAlreadyExists) {
 				const isObjectId = ObjectId.isValid(id);
 				delete dataToInsert.createdAt;
 
-				const filters = isObjectId ? { id: new ObjectId(id) } : { _id: id };
+				const filters = isObjectId ? { _id: new ObjectId(id) } : { _id: id };
 				let response;
 				if (merge) {
 					response = await collection.updateOne(filters, {
@@ -52,7 +52,7 @@ const setOperation = async (args: SetOperationArgs) => {
 					});
 				} else response = await collection.replaceOne(filters, dataToInsert);
 
-				if (!response.acknowledged)
+				if (!response.acknowledged || !response.modifiedCount)
 					return errorResponse({
 						status: 500,
 						message: "Document could not be updated.",

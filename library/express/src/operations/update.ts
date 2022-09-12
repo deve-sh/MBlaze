@@ -44,7 +44,7 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 			const isObjectId = ObjectId.isValid(id);
 
 			const response = await collection.updateOne(
-				isObjectId ? { id: new ObjectId(id) } : { _id: id },
+				isObjectId ? { _id: new ObjectId(id) } : { _id: id },
 				{ $set: dataToUpdate }
 			);
 			if (!response.acknowledged || !response.upsertedId)
