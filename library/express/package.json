@@ -1,11 +1,12 @@
 {
 	"name": "mblaze.express",
-	"version": "0.0.14",
+	"version": "1.0.0",
 	"description": "",
+	"repository": "https://github.com/deve-sh/MBlaze/tree/main/library/express",
 	"main": "index.js",
 	"scripts": {
 		"compile": "tsc",
-		"prepub": "npm run compile && copy package.json dist",
+		"prepub": "npm run compile && copy package.json dist && copy README.md dist",
 		"pub": "cd dist & npm publish"
 	},
 	"keywords": [],
