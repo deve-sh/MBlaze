@@ -4,17 +4,15 @@ import { Db as MongoDBDatabaseInstance, ObjectId } from "mongodb";
 import errorResponse from "../utils/error";
 import findById from "../utils/findById";
 
-const getOperation = async ({
-	collectionName,
-	id,
-	db,
-	res,
-}: {
+interface GetOperationArgs {
 	collectionName: string;
 	id?: string;
 	db: MongoDBDatabaseInstance;
 	res: Response;
-}) => {
+}
+
+const getOperation = async (args: GetOperationArgs) => {
+	const { collectionName, id, db, res } = args;
 	if (!id)
 		return errorResponse({
 			status: 400,

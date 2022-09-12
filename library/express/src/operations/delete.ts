@@ -4,17 +4,15 @@ import deleteOne from "../utils/deleteOne";
 import errorResponse from "../utils/error";
 import findById from "../utils/findById";
 
-const deleteOperation = async ({
-	collectionName,
-	id,
-	db,
-	res,
-}: {
+interface DeleteOperationArgs {
 	collectionName: string;
 	id: string;
 	db: MongoDBDatabaseInstance;
 	res: Response;
-}) => {
+}
+
+const deleteOperation = async (args: DeleteOperationArgs) => {
+	const { collectionName, id, db, res } = args;
 	if (!id)
 		return errorResponse({
 			status: 400,
