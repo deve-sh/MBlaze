@@ -46,7 +46,7 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 				isObjectId ? { _id: new ObjectId(id) } : { _id: id },
 				{ $set: dataToUpdate }
 			);
-			if (!response.acknowledged || !response.upsertedId)
+			if (!response.acknowledged || !response.modifiedCount)
 				return errorResponse({
 					status: 500,
 					message: "Document could not be updated.",
