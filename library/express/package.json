@@ -1,6 +1,6 @@
 {
 	"name": "mblaze.express",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "",
 	"repository": "https://github.com/deve-sh/MBlaze/tree/main/library/express",
 	"main": "index.js",
@@ -9,7 +9,12 @@
 		"prepub": "npm run compile && copy package.json dist && copy README.md dist",
 		"pub": "cd dist & npm publish"
 	},
-	"keywords": [],
+	"keywords": [
+		"mongodb",
+		"express",
+		"middleware",
+		"firestore"
+	],
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
