@@ -6,6 +6,7 @@ import type MiddlewareBody from "./types/MiddlewareBody";
 import deleteOperation from "./operations/delete";
 import getOperation from "./operations/get";
 import listOperation from "./operations/list";
+import createOperation from "./operations/set";
 
 // Response creators
 import errorResponse from "./utils/error";
@@ -25,6 +26,8 @@ export default async (db: MongoDBDatabaseInstanace) =>
 			id,
 			limit = 100,
 			offset = 0,
+			newData,
+			merge,
 		} = req.body as MiddlewareBody;
 
 		if (!collectionName)
@@ -50,6 +53,15 @@ export default async (db: MongoDBDatabaseInstanace) =>
 				offset,
 				db,
 				res,
+			});
+		if (operation === "set")
+			return createOperation({
+				collectionName,
+				id: id || "",
+				db,
+				res,
+				newData: newData || {},
+				merge: merge || false,
 			});
 		if (operation === "delete")
 			return deleteOperation({ collectionName, id: id || "", db, res });

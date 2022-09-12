@@ -4,7 +4,7 @@ type OrderBy = AtomicOrderBy | AtomicOrderBy[];
 export default interface MiddlewareBody {
 	collectionName: string;
 	filters?: Record<string, any>;
-	operation: "get" | "list" | "delete" | "update" | "create";
+	operation: "get" | "list" | "delete" | "update" | "set";
 	limit?: number;
 	offset?: number;
 	orderBy?: OrderBy;
