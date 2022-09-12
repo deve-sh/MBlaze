@@ -34,6 +34,7 @@ const deleteOperation = async (args: DeleteOperationArgs) => {
 			message: "Document could not be deleted",
 			res,
 		});
+	return res.sendStatus(204);
 };
 
 export default deleteOperation;
