@@ -5,6 +5,7 @@ import {
 	MongoServerError,
 	ObjectId,
 	OptionalId,
+	WithId,
 } from "mongodb";
 
 import errorResponse from "../utils/error";
@@ -35,14 +36,13 @@ const setOperation = async (args: SetOperationArgs) => {
 			updatedAt: new Date(),
 		};
 
-		let docAlreadyExists = false;
+		let docAlreadyExists: boolean | WithId<Document> | null = false;
 		if (id) {
-			dataToInsert._id = id;
-			docAlreadyExists = !!(await findById(collectionName, id, db));
+			docAlreadyExists = await findById(collectionName, id, db);
 
 			if (docAlreadyExists) {
 				const isObjectId = ObjectId.isValid(id);
-				delete dataToInsert.createdAt;
+				dataToInsert.createdAt = docAlreadyExists.createdAt;
 
 				const filters = isObjectId ? { _id: new ObjectId(id) } : { _id: id };
 				let response;
@@ -62,6 +62,7 @@ const setOperation = async (args: SetOperationArgs) => {
 			}
 		}
 
+		dataToInsert._id = id;
 		const response = await collection.insertOne(
 			dataToInsert as OptionalId<Document>
 		);
