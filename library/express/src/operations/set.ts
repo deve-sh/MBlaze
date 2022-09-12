@@ -25,10 +25,6 @@ interface DataToInsert extends Record<string, any> {
 	createdAt?: Date;
 }
 
-interface UpdateData {
-	$set: DataToInsert;
-}
-
 const setOperation = async (args: SetOperationArgs) => {
 	const { collectionName, db, id, res, newData, merge = false } = args;
 	try {
@@ -48,11 +44,15 @@ const setOperation = async (args: SetOperationArgs) => {
 				const isObjectId = ObjectId.isValid(id);
 				delete dataToInsert.createdAt;
 
-				const response = await collection.updateOne(
-					isObjectId ? { id: new ObjectId(id) } : { _id: id },
-					merge ? ({ $set: dataToInsert } as UpdateData) : dataToInsert
-				);
-				if (!response.acknowledged || !response.upsertedId)
+				const filters = isObjectId ? { id: new ObjectId(id) } : { _id: id };
+				let response;
+				if (merge) {
+					response = await collection.updateOne(filters, {
+						$set: dataToInsert,
+					});
+				} else response = await collection.replaceOne(filters, dataToInsert);
+
+				if (!response.acknowledged)
 					return errorResponse({
 						status: 500,
 						message: "Document could not be updated.",
