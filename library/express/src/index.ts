@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Db as MongoDBDatabaseInstanace, ObjectId } from "mongodb";
+import deleteOperation from "./operations/delete";
 import getOperation from "./operations/get";
 import type MiddlewareBody from "./types/MiddlewareBody";
 
@@ -31,6 +32,8 @@ export default async (db: MongoDBDatabaseInstanace) =>
 
 		if (operation === "get")
 			return getOperation({ collectionName, id, db, res });
+		if (operation === "delete")
+			return deleteOperation({ collectionName, id: id || "", db, res });
 
 		return next();
 	};
