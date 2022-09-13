@@ -19,9 +19,7 @@ describe("Delete Operation Tests", () => {
 		});
 	});
 
-	afterAll(async () => {
-		await disconnect();
-	});
+	afterAll(disconnect);
 
 	it("should return error in case document is not found", async () => {
 		const req = generateRequest({

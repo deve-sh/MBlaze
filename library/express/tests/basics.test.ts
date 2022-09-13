@@ -13,9 +13,7 @@ describe("Basic Tests", () => {
 		});
 	});
 
-	afterAll(async () => {
-		await disconnect();
-	});
+	afterAll(disconnect);
 
 	it("should be a function", () => {
 		expect(mongodbRouteHandler).toBeInstanceOf(Function);

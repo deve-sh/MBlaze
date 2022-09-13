@@ -19,9 +19,7 @@ describe("Get Operation Tests", () => {
 		});
 	});
 
-	afterAll(async () => {
-		await disconnect();
-	});
+	afterAll(disconnect);
 
 	it("should return error in case collectionName is not passed", async () => {
 		const req = generateRequest({});
@@ -74,9 +72,7 @@ describe("List Operation Tests", () => {
 		});
 	});
 
-	afterAll(async () => {
-		await disconnect();
-	});
+	afterAll(disconnect);
 
 	it("should return an empty array in case documents matching filters are not found", async () => {
 		const req = generateRequest({

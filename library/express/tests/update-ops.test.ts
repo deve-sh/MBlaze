@@ -19,9 +19,7 @@ describe("Update Operation Tests", () => {
 		});
 	});
 
-	afterAll(async () => {
-		await disconnect();
-	});
+	afterAll(disconnect);
 
 	it("should return error in case newData is not passed", async () => {
 		const req = generateRequest({
