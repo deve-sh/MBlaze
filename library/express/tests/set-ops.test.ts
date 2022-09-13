@@ -1,8 +1,8 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Db } from "mongodb";
 import { connect, disconnect } from "./utils/mongodb";
 import mongodbRouteHandler from "../src";
-import res, { generateRequest } from "./__mocks__/express";
+import { res, generateRequest, next } from "./__mocks__/express";
 
 describe("Set Operation Tests", () => {
 	let db: Db;
@@ -26,7 +26,7 @@ describe("Set Operation Tests", () => {
 			collectionName: "projects",
 			operation: "set",
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.error).toMatch(/New Data is required/);
 		expect(responseReceived.status).toBe(400);
 	});
@@ -37,7 +37,7 @@ describe("Set Operation Tests", () => {
 			operation: "set",
 			newData: { field: "value" },
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.acknowledged).toBe(true);
 		expect(responseReceived.status).toBe(201);
 	});
@@ -49,7 +49,7 @@ describe("Set Operation Tests", () => {
 			newData: { field: "value" },
 			id: "project1",
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.acknowledged).toBe(true);
 		expect(responseReceived.insertedId).toEqual("project1");
 		expect(responseReceived.status).toBe(201);
@@ -62,7 +62,7 @@ describe("Set Operation Tests", () => {
 			newData: { field: "updated_value" },
 			id: "project1",
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.acknowledged).toBe(true);
 		expect(responseReceived.modifiedCount).toEqual(1);
 		expect(responseReceived.status).toBe(200);
@@ -76,7 +76,7 @@ describe("Set Operation Tests", () => {
 			id: "project1",
 			merge: true,
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.acknowledged).toBe(true);
 		expect(responseReceived.modifiedCount).toEqual(1);
 		expect(responseReceived.status).toBe(200);

@@ -1,8 +1,8 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Db } from "mongodb";
 import { connect, disconnect } from "./utils/mongodb";
 import mongodbRouteHandler from "../src";
-import res, { generateRequest } from "./__mocks__/express";
+import { res, generateRequest, next } from "./__mocks__/express";
 
 describe("Update Operation Tests", () => {
 	let db: Db;
@@ -27,7 +27,7 @@ describe("Update Operation Tests", () => {
 			operation: "update",
 			id: "project2",
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.error).toMatch(/New Data is required for updation/);
 		expect(responseReceived.status).toBe(400);
 	});
@@ -38,7 +38,7 @@ describe("Update Operation Tests", () => {
 			operation: "update",
 			newData: { fieldToUpdate: "updated_field" },
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.error).toMatch(/Document ID is required/);
 		expect(responseReceived.status).toBe(400);
 	});
@@ -50,7 +50,7 @@ describe("Update Operation Tests", () => {
 			id: "project2",
 			newData: { fieldToUpdate: "updated_field" },
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.error).toMatch(/Document not found/);
 		expect(responseReceived.status).toBe(404);
 	});
@@ -63,7 +63,7 @@ describe("Update Operation Tests", () => {
 			id: "project1",
 			newData: { field: "value" },
 		});
-		await routeHandler(req, res, () => null);
+		await routeHandler(req, res, next);
 
 		// Now delete the created data
 		req = generateRequest({
@@ -72,7 +72,7 @@ describe("Update Operation Tests", () => {
 			id: "project1",
 			newData: { field: "updated_value" },
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.status).toBe(200);
 		expect(responseReceived.acknowledged).toEqual(true);
 		expect(responseReceived.modifiedCount).toEqual(1);

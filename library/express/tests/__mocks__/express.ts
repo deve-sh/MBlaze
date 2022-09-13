@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 
-const res = {
+export const res = {
 	status: function (status: number) {
 		return { statusCode: status, ...this };
 	},
@@ -13,10 +13,9 @@ const res = {
 	json: function (response: any) {
 		return { ...this, ...response, status: this.statusCode };
 	},
-};
+} as Response;
 
-export default res as Response;
-
+export const next = () => null;
 export const generateRequest = (body: Record<string, any>) => {
 	return { body } as Request;
 };

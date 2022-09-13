@@ -1,8 +1,8 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Db } from "mongodb";
 import { connect, disconnect } from "./utils/mongodb";
 import mongodbRouteHandler from "../src";
-import res, { generateRequest } from "./__mocks__/express";
+import { res, generateRequest, next } from "./__mocks__/express";
 
 describe("Delete Operation Tests", () => {
 	let db: Db;
@@ -27,7 +27,7 @@ describe("Delete Operation Tests", () => {
 			operation: "delete",
 			id: "project2",
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.error).toMatch(/Document not found/);
 		expect(responseReceived.status).toBe(404);
 	});
@@ -40,7 +40,7 @@ describe("Delete Operation Tests", () => {
 			id: "project1",
 			newData: { field: "value" },
 		});
-		await routeHandler(req, res, () => null);
+		await routeHandler(req, res, next);
 
 		// Now delete the created data
 		req = generateRequest({
@@ -48,7 +48,7 @@ describe("Delete Operation Tests", () => {
 			operation: "delete",
 			id: "project1",
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
+		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.status).toBe(204);
 	});
 });
