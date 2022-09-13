@@ -13,7 +13,7 @@ import updateOperation from "./operations/update";
 import errorResponse from "./utils/error";
 
 // Express Middleware
-export default (db: MongoDBDatabaseInstanace) => {
+const mongodbRouteHandler = (db: MongoDBDatabaseInstanace) => {
 	if (!db)
 		throw new Error(
 			"MongoDB Database connection instance has to be passed to MBlaze Middleware"
@@ -82,3 +82,5 @@ export default (db: MongoDBDatabaseInstanace) => {
 		return next();
 	};
 };
+
+export default mongodbRouteHandler;

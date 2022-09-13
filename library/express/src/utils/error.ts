@@ -10,6 +10,7 @@ const errorResponse = ({
 	message: string;
 	res: Response;
 	extraFields?: Record<string, any>;
-}) => res.status(status).json({ error: message, message, ...extraFields });
+}) =>
+	res.status(status).json({ status, error: message, message, ...extraFields });
 
 export default errorResponse;
