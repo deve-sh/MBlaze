@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { Db as MongoDBDatabaseInstanace, ObjectId } from "mongodb";
+import { Db as MongoDBDatabaseInstanace } from "mongodb";
 import type MiddlewareBody from "./types/MiddlewareBody";
 
 // Operations
@@ -13,13 +13,17 @@ import updateOperation from "./operations/update";
 import errorResponse from "./utils/error";
 
 // Express Middleware
-export default (db: MongoDBDatabaseInstanace) =>
-	async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-		if (!db)
-			throw new Error(
-				"MongoDB Database instance has to be passed to MBlaze Middleware"
-			);
+export default (db: MongoDBDatabaseInstanace) => {
+	if (!db)
+		throw new Error(
+			"MongoDB Database connection instance has to be passed to MBlaze Middleware"
+		);
 
+	return async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<any> => {
 		const {
 			collectionName,
 			filters,
@@ -77,3 +81,4 @@ export default (db: MongoDBDatabaseInstanace) =>
 
 		return next();
 	};
+};
