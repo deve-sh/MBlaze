@@ -15,7 +15,7 @@ interface SetOperationArgs {
 	collectionName: string;
 	db: MongoDBDatabaseInstance;
 	id?: string;
-	newData: Record<string, any>;
+	newData?: Record<string, any>;
 	res: Response;
 	merge: boolean;
 }
@@ -72,7 +72,7 @@ const setOperation = async (args: SetOperationArgs) => {
 		const response = await collection.insertOne(
 			dataToInsert as OptionalId<Document>
 		);
-		if (!response.acknowledged || !response.insertedId)
+		if (!response.acknowledged)
 			return errorResponse({
 				status: 500,
 				message: "Document could not be created/set.",

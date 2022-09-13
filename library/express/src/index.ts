@@ -65,7 +65,7 @@ const mongodbRouteHandler = (db: MongoDBDatabaseInstanace) => {
 				id: id || "",
 				db,
 				res,
-				newData: newData || {},
+				newData: newData,
 				merge: merge || false,
 			});
 		if (operation === "update")
