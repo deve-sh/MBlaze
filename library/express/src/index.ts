@@ -74,7 +74,7 @@ const mongodbRouteHandler = (db: MongoDBDatabaseInstanace) => {
 				id: id || "",
 				db,
 				res,
-				newData: newData || {},
+				newData: newData,
 			});
 		if (operation === "delete")
 			return deleteOperation({ collectionName, id: id || "", db, res });

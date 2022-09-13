@@ -12,7 +12,7 @@ interface UpdateOperationArgs {
 	collectionName: string;
 	db: MongoDBDatabaseInstance;
 	id?: string;
-	newData: Record<string, any>;
+	newData?: Record<string, any>;
 	res: Response;
 }
 
@@ -23,6 +23,13 @@ interface DataToUpdate extends Record<string, any> {
 const updateOperation = async (args: UpdateOperationArgs) => {
 	const { collectionName, db, id, res, newData } = args;
 	try {
+		if (!newData)
+			return errorResponse({
+				status: 400,
+				message: "New Data is required for updation.",
+				res,
+			});
+
 		const collection = db.collection(collectionName);
 		const dataToUpdate: DataToUpdate = {
 			...newData,

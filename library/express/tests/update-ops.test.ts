@@ -4,7 +4,7 @@ import { connect, disconnect } from "./utils/mongodb";
 import mongodbRouteHandler from "../src";
 import res, { generateRequest } from "./__mocks__/express";
 
-describe("Set Operation Tests", () => {
+describe("Update Operation Tests", () => {
 	let db: Db;
 	let routeHandler: (
 		req: Request,
@@ -26,61 +26,57 @@ describe("Set Operation Tests", () => {
 	it("should return error in case newData is not passed", async () => {
 		const req = generateRequest({
 			collectionName: "projects",
-			operation: "set",
+			operation: "update",
+			id: "project2",
 		});
 		const responseReceived = await routeHandler(req, res, () => null);
-		expect(responseReceived.error).toMatch(/New Data is required/);
+		expect(responseReceived.error).toMatch(/New Data is required for updation/);
 		expect(responseReceived.status).toBe(400);
 	});
 
-	it("should insert new data if id is not passed", async () => {
+	it("should return error in case id is not passed", async () => {
 		const req = generateRequest({
 			collectionName: "projects",
-			operation: "set",
-			newData: { field: "value" },
+			operation: "update",
+			newData: { fieldToUpdate: "updated_field" },
 		});
 		const responseReceived = await routeHandler(req, res, () => null);
-		expect(responseReceived.acknowledged).toBe(true);
-		expect(responseReceived.status).toBe(201);
+		expect(responseReceived.error).toMatch(/Document ID is required/);
+		expect(responseReceived.status).toBe(400);
 	});
 
-	it("should insert new data with defined id if id is passed", async () => {
+	it("should return error in case document is not found", async () => {
 		const req = generateRequest({
 			collectionName: "projects",
+			operation: "update",
+			id: "project2",
+			newData: { fieldToUpdate: "updated_field" },
+		});
+		const responseReceived = await routeHandler(req, res, () => null);
+		expect(responseReceived.error).toMatch(/Document not found/);
+		expect(responseReceived.status).toBe(404);
+	});
+
+	it("should return 200 if data is successfully updated", async () => {
+		// First create data
+		let req = generateRequest({
+			collectionName: "projects",
 			operation: "set",
-			newData: { field: "value" },
 			id: "project1",
+			newData: { field: "value" },
 		});
-		const responseReceived = await routeHandler(req, res, () => null);
-		expect(responseReceived.acknowledged).toBe(true);
-		expect(responseReceived.insertedId).toEqual("project1");
-		expect(responseReceived.status).toBe(201);
-	});
+		await routeHandler(req, res, () => null);
 
-	it("should replace existing data with id", async () => {
-		const req = generateRequest({
+		// Now delete the created data
+		req = generateRequest({
 			collectionName: "projects",
-			operation: "set",
+			operation: "update",
+			id: "project1",
 			newData: { field: "updated_value" },
-			id: "project1",
 		});
 		const responseReceived = await routeHandler(req, res, () => null);
-		expect(responseReceived.acknowledged).toBe(true);
-		expect(responseReceived.modifiedCount).toEqual(1);
 		expect(responseReceived.status).toBe(200);
-	});
-
-	it("should update existing data with id if merge: true is passed", async () => {
-		const req = generateRequest({
-			collectionName: "projects",
-			operation: "set",
-			newData: { field1: "new_value" },
-			id: "project1",
-			merge: true,
-		});
-		const responseReceived = await routeHandler(req, res, () => null);
-		expect(responseReceived.acknowledged).toBe(true);
+		expect(responseReceived.acknowledged).toEqual(true);
 		expect(responseReceived.modifiedCount).toEqual(1);
-		expect(responseReceived.status).toBe(200);
 	});
 });
