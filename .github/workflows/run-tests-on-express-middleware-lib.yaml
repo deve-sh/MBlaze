@@ -1,0 +1,27 @@
+name: Run Tests On Express Middleware Library
+
+on: push
+
+jobs:
+  deploy:
+    name: Run Tests On Express Middleware Library
+    runs-on: ubuntu-latest
+    env:
+      RUN_TESTS: ${{ secrets.RUN_TESTS }}
+
+    steps:
+      - name: Checkout Files
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        if: ${{ env.RUN_TESTS == 'true' }}
+        with:
+          node-version: 16
+
+      - name: Run Tests
+        if: ${{ env.RUN_TESTS == 'true' }}
+        run: |
+          cd ./library/express
+          npm install
+          npm run test
