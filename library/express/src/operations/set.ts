@@ -29,6 +29,12 @@ interface DataToInsert extends Record<string, any> {
 const setOperation = async (args: SetOperationArgs) => {
 	const { collectionName, db, id, res, newData, merge = false } = args;
 	try {
+		if (!newData)
+			return errorResponse({
+				status: 400,
+				message: "New Data is required for creation/update.",
+				res,
+			});
 		const collection = db.collection(collectionName);
 		const dataToInsert: DataToInsert = {
 			...newData,
