@@ -1,18 +1,20 @@
-import { Db } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import mongodbRouteHandler from "../src";
-const { MongoClient } = require("mongodb");
+import { connect, disconnect } from "./utils/mongodb";
 
 describe("Basic Tests", () => {
-	let connection;
+	let connection: MongoClient;
 	let db: Db;
 
 	beforeAll(async () => {
-		connection = await MongoClient.connect(globalThis.__MONGO_URI__);
-		db = await connection.db(globalThis.__MONGO_DB_NAME__);
+		await connect().then((vals) => {
+			connection = vals.connection;
+			db = vals.db;
+		});
 	});
 
 	afterAll(async () => {
-		await connection.close();
+		await disconnect();
 	});
 
 	it("should be a function", () => {
