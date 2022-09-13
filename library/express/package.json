@@ -8,7 +8,8 @@
 		"compile": "tsc",
 		"prepub": "npm run compile && copy package.json dist && copy README.md dist",
 		"pub": "cd dist & npm publish",
-		"test": "jest ./tests"
+		"test": "jest ./tests",
+		"test:coverage": "npm run test --coverage"
 	},
 	"keywords": [
 		"mongodb",
