@@ -1,12 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { Db, MongoClient } from "mongodb";
+import { Db } from "mongodb";
 import { connect, disconnect } from "./utils/mongodb";
 import mongodbRouteHandler from "../src";
-import res from "./__mocks__/express";
-
-const generateRequest = (body: Record<string, any>) => {
-	return { body } as Request;
-};
+import res, { generateRequest } from "./__mocks__/express";
 
 describe("Get Operation Tests", () => {
 	let db: Db;

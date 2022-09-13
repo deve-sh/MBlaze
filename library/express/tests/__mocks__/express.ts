@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 
 const res = {
 	status: function (status: number) {
@@ -13,3 +13,7 @@ const res = {
 };
 
 export default res as Response;
+
+export const generateRequest = (body: Record<string, any>) => {
+	return { body } as Request;
+};
