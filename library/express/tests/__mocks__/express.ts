@@ -4,11 +4,14 @@ const res = {
 	status: function (status: number) {
 		return { statusCode: status, ...this };
 	},
+	sendStatus: function (status: number) {
+		return { ...this, statusCode: status, status: status };
+	},
 	send: function (response: any) {
-		return { ...response, status: this.statusCode };
+		return { ...this, ...response, status: this.statusCode };
 	},
 	json: function (response: any) {
-		return { ...response, status: this.statusCode };
+		return { ...this, ...response, status: this.statusCode };
 	},
 };
 
