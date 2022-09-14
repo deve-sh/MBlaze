@@ -22,7 +22,7 @@ const checkForSecurityRule = async (
 	const { req, collection, id, newResource, resource, filters, operation } =
 		args;
 
-	const securityRulesEvaluator = async (decider: SecurityRulesDecider) => {
+	const ruleEvaluator = async (decider: SecurityRulesDecider) => {
 		if (typeof decider === "boolean") return decider;
 		if (typeof decider === "function")
 			return await decider({
@@ -33,6 +33,7 @@ const checkForSecurityRule = async (
 				resource,
 				filters,
 			});
+		return false;
 	};
 
 	// If no security rules, let everything pass.
@@ -43,25 +44,25 @@ const checkForSecurityRule = async (
 	if (collectionLevelRules) {
 		const collectionLevelOpRule = collectionLevelRules[operation];
 		if (collectionLevelOpRule)
-			return await securityRulesEvaluator(collectionLevelOpRule);
+			return await ruleEvaluator(collectionLevelOpRule);
 		else {
 			// Check for less-granular collection-level rules like 'read', 'write'
 			if (readOps.includes(operation) && collectionLevelRules.read)
-				return await securityRulesEvaluator(collectionLevelRules.read);
+				return await ruleEvaluator(collectionLevelRules.read);
 			if (writeOps.includes(operation) && collectionLevelRules.write)
-				return await securityRulesEvaluator(collectionLevelRules.write);
+				return await ruleEvaluator(collectionLevelRules.write);
 		}
 	}
 
 	// Less granular
 	if (securityRulesObject[operation]) {
 		const rootLevelOpRule = securityRulesObject[operation];
-		return await securityRulesEvaluator(rootLevelOpRule);
+		return await ruleEvaluator(rootLevelOpRule);
 	} else {
 		if (readOps.includes(operation) && securityRulesObject.read)
-			return await securityRulesEvaluator(securityRulesObject.read);
+			return await ruleEvaluator(securityRulesObject.read);
 		if (writeOps.includes(operation) && securityRulesObject.write)
-			return await securityRulesEvaluator(securityRulesObject.write);
+			return await ruleEvaluator(securityRulesObject.write);
 	}
 
 	return false;
