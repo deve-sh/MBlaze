@@ -6,9 +6,9 @@ export interface SecurityRulesCheckerArgs {
 	req?: Request;
 	collection: string;
 	id?: string;
-	newResource?: Record<string, any>;
-	resource?: Record<string, any>;
-	filters?: Record<string, any>;
+	newResource?: Record<string, any> | null;
+	resource?: Record<string, any> | null;
+	filters?: Record<string, any> | null;
 	operation: operations | "create";
 }
 
@@ -43,7 +43,7 @@ const isAllowedBySecurityRules = async (
 	const collectionLevelRules = securityRulesObject[collection];
 	if (collectionLevelRules && typeof collectionLevelRules === "object") {
 		const collectionLevelOpRule = collectionLevelRules[operation];
-		if (collectionLevelOpRule)
+		if (operation in collectionLevelRules)
 			return await ruleEvaluator(collectionLevelOpRule);
 		else {
 			// Check for less-granular collection-level rules like 'read', 'write'
@@ -55,10 +55,7 @@ const isAllowedBySecurityRules = async (
 	}
 
 	// Less granular
-	if (
-		securityRulesObject[operation] &&
-		typeof securityRulesObject[operation] === "object"
-	) {
+	if (operation in securityRulesObject) {
 		const rootLevelOpRule = securityRulesObject[operation];
 		return await ruleEvaluator(rootLevelOpRule);
 	} else {
