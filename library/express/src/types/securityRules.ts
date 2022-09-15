@@ -1,20 +1,20 @@
 import type { Request } from "express";
 
-interface SecurityRulesFunctionArgs {
+export interface SecurityRulesDeciderFunctionArgs {
 	req: Request;
 	collection: string;
 	id?: string;
-	newResource?: Record<string, any>;
-	resource?: Record<string, any>;
-	filters?: Record<string, any>;
+	newResource?: Record<string, any> | null;
+	resource?: Record<string, any> | null;
+	filters?: Record<string, any> | null;
 }
 
 export type SecurityRulesDecider =
 	| boolean
-	| ((args: SecurityRulesFunctionArgs) => boolean)
+	| ((args: SecurityRulesDeciderFunctionArgs) => boolean | Promise<boolean>)
 	| SecurityRulesFragment;
 
-interface SecurityRulesFragment {
+export interface SecurityRulesFragment {
 	read?: SecurityRulesDecider;
 	get?: SecurityRulesDecider;
 	list?: SecurityRulesDecider;
