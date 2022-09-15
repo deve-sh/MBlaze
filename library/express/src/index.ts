@@ -2,6 +2,8 @@ import type { NextFunction, Request, Response } from "express";
 import { Db as MongoDBDatabaseInstanace } from "mongodb";
 import type MiddlewareBody from "./types/MiddlewareBody";
 
+import type { SecurityRules } from "./types/securityRules";
+
 // Operations
 import deleteOperation from "./operations/delete";
 import getOperation from "./operations/get";
@@ -13,7 +15,10 @@ import updateOperation from "./operations/update";
 import errorResponse from "./utils/error";
 
 // Express Middleware
-const mongodbRouteHandler = (db: MongoDBDatabaseInstanace) => {
+const mongodbRouteHandler = (
+	db: MongoDBDatabaseInstanace,
+	securityRules?: SecurityRules
+) => {
 	if (!db)
 		throw new Error(
 			"MongoDB Database connection instance has to be passed to MBlaze Middleware"
@@ -49,7 +54,7 @@ const mongodbRouteHandler = (db: MongoDBDatabaseInstanace) => {
 			});
 
 		if (operation === "get")
-			return getOperation({ collectionName, id, db, res, req });
+			return getOperation({ collectionName, id, db, res, req, securityRules });
 		if (operation === "list")
 			return listOperation({
 				collectionName,
@@ -58,6 +63,8 @@ const mongodbRouteHandler = (db: MongoDBDatabaseInstanace) => {
 				offset,
 				db,
 				res,
+				req,
+				securityRules,
 			});
 		if (operation === "set")
 			return setOperation({
