@@ -46,6 +46,25 @@ describe("Get Operation Tests", () => {
 		expect(responseReceived.status).toBe(400);
 	});
 
+	it("should return error in case security rules prohibit reads", async () => {
+		const originalRouteHandler = routeHandler;
+
+		routeHandler = mongodbRouteHandler(db, {
+			read: false,
+			write: true,
+		});
+		const req = generateRequest({
+			collectionName: "projects",
+			id: "project1",
+			operation: "get",
+		});
+		const responseReceived = await routeHandler(req, res, next);
+		expect(responseReceived.error).toMatch(/Insufficient Permissions/);
+		expect(responseReceived.status).toBe(401);
+
+		routeHandler = originalRouteHandler;
+	});
+
 	it("should return error in case document is not found for get operation", async () => {
 		const req = generateRequest({
 			collectionName: "projects",
@@ -105,6 +124,24 @@ describe("List Operation Tests", () => {
 		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.documents).toHaveLength(0);
 		expect(responseReceived.status).toBe(200);
+	});
+
+	it("should return error in case security rules prohibit list operations", async () => {
+		const originalRouteHandler = routeHandler;
+
+		routeHandler = mongodbRouteHandler(db, {
+			read: ({ filters }) => filters.field !== "value",
+		});
+		const req = generateRequest({
+			collectionName: "projects",
+			filters: { field: "value" },
+			operation: "list",
+		});
+		const responseReceived = await routeHandler(req, res, next);
+		expect(responseReceived.error).toMatch(/Insufficient Permissions/);
+		expect(responseReceived.status).toBe(401);
+
+		routeHandler = originalRouteHandler;
 	});
 
 	it("should return all correct documents matching filters", async () => {

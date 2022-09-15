@@ -22,6 +22,25 @@ describe("Delete Operation Tests", () => {
 
 	afterAll(disconnect);
 
+	it("should return error in case security rules prohibit deletions", async () => {
+		const originalRouteHandler = routeHandler;
+
+		routeHandler = mongodbRouteHandler(db, {
+			read: true,
+			delete: false,
+		});
+		const req = generateRequest({
+			collectionName: "projects",
+			operation: "delete",
+			id: "project2",
+		});
+		const responseReceived = await routeHandler(req, res, next);
+		expect(responseReceived.error).toMatch(/Insufficient Permissions/);
+		expect(responseReceived.status).toBe(401);
+
+		routeHandler = originalRouteHandler;
+	});
+
 	it("should return error in case document is not found", async () => {
 		const req = generateRequest({
 			collectionName: "projects",
