@@ -77,21 +77,26 @@ describe("Test suite for security rules", () => {
 		]);
 		// Read args checks
 		expect(readArgsPassed.collection).toBe("projects");
+		expect(readArgsPassed.operation).toBe("get");
 		expect(readArgsPassed.id).toBe("project1");
 		expect(readArgsPassed.newResource).toBeFalsy();
 		expect(readArgsPassed.req.headers.authorization).toBe("abc");
 		// Create args checks
 		expect(creationArgsPassed.collection).toBe("projects");
+		expect(creationArgsPassed.operation).toBe("create");
 		expect(creationArgsPassed.id).toBe("new-project");
 		expect(creationArgsPassed.resource).toBeFalsy();
 		expect(creationArgsPassed.newResource.field).toEqual("value");
 		// Update args checks
+		expect(updationArgsPassed.operation).toBe("update");
 		expect(updationArgsPassed.resource.field).toEqual("existing_value");
 		expect(updationArgsPassed.newResource.field).toEqual("new_value");
 		expect(updationArgsPassed.newResource.field1).toEqual("new_field");
 		// List args checks
+		expect(listArgsPassed.operation).toBe("list");
 		expect(listArgsPassed.filters.field).toEqual("value");
 		// Deletion args checks
+		expect(deletionArgsPassed.operation).toBe("delete");
 		expect(deletionArgsPassed.resource.field).toEqual("existing_value");
 		expect(deletionArgsPassed.newResource).toBeFalsy();
 		expect(deletionArgsPassed.id).toEqual("project-to-delete");
