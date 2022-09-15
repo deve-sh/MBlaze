@@ -24,3 +24,73 @@ app.use("/mongodb", mongodbRouteHandler(db));
 ```
 
 **Note:** Make sure the connection is already established before extracting, otherwise the value of `db` would be `undefined`.
+
+#### Security Rules
+
+You can specify security rules for your collections while instantiating the route handler.
+
+```javascript
+app.use("/mongodb", mongodbRouteHandler(db, securityRules));
+```
+
+The Security Rules take the form of an object with the following structure:
+
+```typescript
+SecuityRulesObject = {
+    read: boolean | (Async)Function;    // get or list
+    write: boolean | (Async)Function;   // create or update or delete
+
+    // Or more granular
+    get: boolean | (Async)Function;
+    list: boolean | (Async)Function;
+    create: boolean | (Async)Function;
+    update: boolean | (Async)Function;
+    delete: boolean | (Async)Function;
+
+    // Or even collection-level granular
+    [collectionName]: {
+        get: boolean | (Async)Function;
+        list: boolean | (Async)Function;
+        create: boolean | (Async)Function;
+        update: boolean | (Async)Function;
+        delete: boolean | (Async)Function;
+    }
+}
+```
+
+The precedence order is most granular to least granular.
+
+I.E: For a get operation on the `projects` collection
+
+```javascript
+const securityRules = {
+	read: true,
+	projects: {
+		get: false, // This will be considered
+	},
+};
+```
+
+The Function to assess the read takes the following arguments:
+
+```javascript
+const securityRuleFunction = (args) => {
+    const {
+        req,    // The Express request, in case cookies or headers need to be verified
+        operation,  // The operation being performed. get | list | create | update| delete
+        collection, // The collection the op is being performed on
+        id, // Only in case of get, create, update and delete operations
+        newResource,    // Data after the document will be modified, only for create and update operations
+        resource,   // The currently existing data, only for get, update and delete ops
+        filters,    // Only in case of 'list' operations
+    } = args;
+
+    return true or false;
+}
+
+const securityRules = {
+    get: securityRuleFunction,
+    list: securityRuleFunction,
+    ...
+}
+```
