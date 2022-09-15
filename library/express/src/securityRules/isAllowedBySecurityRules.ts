@@ -25,14 +25,16 @@ const isAllowedBySecurityRules = async (
 	const ruleEvaluator = async (decider: SecurityRulesDecider) => {
 		if (typeof decider === "boolean") return decider;
 		if (typeof decider === "function")
-			return await decider({
-				req: req || ({} as Request),
-				collection,
-				id,
-				newResource,
-				resource,
-				filters,
-			});
+			return (
+				(await decider({
+					req: req || ({} as Request),
+					collection,
+					id,
+					newResource,
+					resource,
+					filters,
+				})) || false
+			);
 		return false;
 	};
 
