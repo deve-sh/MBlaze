@@ -15,7 +15,7 @@ interface SecurityRulesCheckerArgs {
 const readOps = ["get", "list"];
 const writeOps = ["create", "update", "delete"];
 
-const checkForSecurityRule = async (
+const isAllowedBySecurityRules = async (
 	args: SecurityRulesCheckerArgs,
 	securityRulesObject: SecurityRules
 ) => {
@@ -68,4 +68,4 @@ const checkForSecurityRule = async (
 	return false;
 };
 
-export default checkForSecurityRule;
+export default isAllowedBySecurityRules;
