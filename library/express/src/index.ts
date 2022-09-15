@@ -84,7 +84,14 @@ const mongodbRouteHandler = (
 				newData: newData,
 			});
 		if (operation === "delete")
-			return deleteOperation({ collectionName, id: id || "", db, res });
+			return deleteOperation({
+				collectionName,
+				id: id || "",
+				db,
+				res,
+				req,
+				securityRules,
+			});
 
 		return next();
 	};

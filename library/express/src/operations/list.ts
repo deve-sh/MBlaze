@@ -1,8 +1,8 @@
 import type { Response, Request } from "express";
-import { Db as MongoDBDatabaseInstance } from "mongodb";
-import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
-import { SecurityRules } from "../types/securityRules";
+import type { Db as MongoDBDatabaseInstance } from "mongodb";
+import type { SecurityRules } from "../types/securityRules";
 
+import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 import errorResponse from "../utils/error";
 
 interface ListOperationArgs {

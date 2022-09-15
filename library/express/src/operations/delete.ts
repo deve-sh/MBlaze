@@ -1,5 +1,8 @@
-import type { Response } from "express";
-import { Db as MongoDBDatabaseInstance, ObjectId } from "mongodb";
+import type { Response, Request } from "express";
+import type { Db as MongoDBDatabaseInstance } from "mongodb";
+import type { SecurityRules } from "../types/securityRules";
+
+import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 import deleteOne from "../utils/deleteOne";
 import errorResponse from "../utils/error";
 import findById from "../utils/findById";
@@ -9,10 +12,12 @@ interface DeleteOperationArgs {
 	id: string;
 	db: MongoDBDatabaseInstance;
 	res: Response;
+	req: Request;
+	securityRules?: SecurityRules;
 }
 
 const deleteOperation = async (args: DeleteOperationArgs) => {
-	const { collectionName, id, db, res } = args;
+	const { collectionName, id, db, res, req, securityRules } = args;
 	if (!id)
 		return errorResponse({
 			status: 400,
@@ -21,6 +26,22 @@ const deleteOperation = async (args: DeleteOperationArgs) => {
 		});
 
 	const document = await findById(collectionName, id, db);
+	const isAccessAllowed = await isAllowedBySecurityRules(
+		{
+			req,
+			collection: collectionName,
+			id,
+			resource: document,
+			operation: "delete",
+		},
+		securityRules
+	);
+	if (!isAccessAllowed)
+		return errorResponse({
+			status: 401,
+			message: "Insufficient Permissions",
+			res,
+		});
 	if (!document)
 		return errorResponse({
 			status: 404,
