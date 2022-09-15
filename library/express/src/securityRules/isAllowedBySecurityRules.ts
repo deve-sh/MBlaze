@@ -33,6 +33,7 @@ const isAllowedBySecurityRules = async (
 					newResource,
 					resource,
 					filters,
+					operation,
 				})) || false
 			);
 		return false;

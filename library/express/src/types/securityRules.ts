@@ -1,4 +1,5 @@
 import type { Request } from "express";
+import type operations from "./operations";
 
 export interface SecurityRulesDeciderFunctionArgs {
 	req: Request;
@@ -7,12 +8,12 @@ export interface SecurityRulesDeciderFunctionArgs {
 	newResource?: Record<string, any> | null;
 	resource?: Record<string, any> | null;
 	filters?: Record<string, any> | null;
+	operation?: operations | "create";
 }
 
 export type SecurityRulesDecider =
 	| boolean
-	| ((args: SecurityRulesDeciderFunctionArgs) => boolean | Promise<boolean>)
-	| SecurityRulesFragment;
+	| ((args: SecurityRulesDeciderFunctionArgs) => boolean | Promise<boolean>);
 
 export interface SecurityRulesFragment {
 	read?: SecurityRulesDecider;
