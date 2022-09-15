@@ -17,7 +17,7 @@ const writeOps = ["create", "update", "delete"];
 
 const isAllowedBySecurityRules = async (
 	args: SecurityRulesCheckerArgs,
-	securityRulesObject: SecurityRules
+	securityRulesObject?: SecurityRules
 ) => {
 	try {
 		const { req, collection, id, newResource, resource, filters, operation } =

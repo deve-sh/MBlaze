@@ -49,7 +49,7 @@ const mongodbRouteHandler = (db: MongoDBDatabaseInstanace) => {
 			});
 
 		if (operation === "get")
-			return getOperation({ collectionName, id, db, res });
+			return getOperation({ collectionName, id, db, res, req });
 		if (operation === "list")
 			return listOperation({
 				collectionName,
