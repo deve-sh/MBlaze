@@ -2,14 +2,14 @@ import type { Request } from "express";
 import operations from "../types/operations";
 import { SecurityRules, SecurityRulesDecider } from "../types/securityRules";
 
-interface SecurityRulesCheckerArgs {
-	req: Request;
+export interface SecurityRulesCheckerArgs {
+	req?: Request;
 	collection: string;
 	id?: string;
 	newResource?: Record<string, any>;
 	resource?: Record<string, any>;
 	filters?: Record<string, any>;
-	operation: operations;
+	operation: operations | "create";
 }
 
 const readOps = ["get", "list"];
@@ -26,7 +26,7 @@ const isAllowedBySecurityRules = async (
 		if (typeof decider === "boolean") return decider;
 		if (typeof decider === "function")
 			return await decider({
-				req,
+				req: req || ({} as Request),
 				collection,
 				id,
 				newResource,
@@ -41,27 +41,30 @@ const isAllowedBySecurityRules = async (
 
 	// Get the most granular collection-level rules out of the way.
 	const collectionLevelRules = securityRulesObject[collection];
-	if (collectionLevelRules) {
+	if (collectionLevelRules && typeof collectionLevelRules === "object") {
 		const collectionLevelOpRule = collectionLevelRules[operation];
 		if (collectionLevelOpRule)
 			return await ruleEvaluator(collectionLevelOpRule);
 		else {
 			// Check for less-granular collection-level rules like 'read', 'write'
-			if (readOps.includes(operation) && collectionLevelRules.read)
+			if (readOps.includes(operation) && "read" in collectionLevelRules)
 				return await ruleEvaluator(collectionLevelRules.read);
-			if (writeOps.includes(operation) && collectionLevelRules.write)
+			if (writeOps.includes(operation) && "write" in collectionLevelRules)
 				return await ruleEvaluator(collectionLevelRules.write);
 		}
 	}
 
 	// Less granular
-	if (securityRulesObject[operation]) {
+	if (
+		securityRulesObject[operation] &&
+		typeof securityRulesObject[operation] === "object"
+	) {
 		const rootLevelOpRule = securityRulesObject[operation];
 		return await ruleEvaluator(rootLevelOpRule);
 	} else {
-		if (readOps.includes(operation) && securityRulesObject.read)
+		if (readOps.includes(operation) && "read" in securityRulesObject)
 			return await ruleEvaluator(securityRulesObject.read);
-		if (writeOps.includes(operation) && securityRulesObject.write)
+		if (writeOps.includes(operation) && "write" in securityRulesObject)
 			return await ruleEvaluator(securityRulesObject.write);
 	}
 
