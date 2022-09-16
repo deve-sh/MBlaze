@@ -104,13 +104,14 @@ const setOperation = async (args: SetOperationArgs) => {
 		}
 
 		// Check for security rules before insertion
+		dataToInsert._id = id || new ObjectId().toString();
 		const isInsertionAllowed = await isAllowedBySecurityRules(
 			{
 				req,
 				resource: null,
 				newResource: unflatten(dataToInsert) as Partial<Object>,
 				collection: collectionName,
-				id: id || undefined,
+				id: dataToInsert._id,
 				operation: "create",
 			},
 			securityRules
