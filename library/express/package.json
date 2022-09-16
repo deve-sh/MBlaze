@@ -6,7 +6,7 @@
 	"main": "index.js",
 	"scripts": {
 		"compile": "tsc",
-		"prepub": "npm run compile && copy package.json dist && copy README.md dist",
+		"prepub": "node ./scripts/prepublish.js",
 		"pub": "cd dist & npm publish",
 		"test": "jest ./tests",
 		"test:coverage": "npm run test --coverage"
