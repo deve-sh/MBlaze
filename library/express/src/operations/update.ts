@@ -1,12 +1,20 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import {
 	Db as MongoDBDatabaseInstance,
 	MongoServerError,
 	ObjectId,
 } from "mongodb";
+import deepMerge from "deepmerge";
+import { unflatten } from "flat";
+
+import type { SecurityRules } from "../types/securityRules";
+import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 
 import errorResponse from "../utils/error";
-import { DOCUMENT_NOT_FOUND } from "../utils/errorConstants";
+import {
+	DOCUMENT_NOT_FOUND,
+	INSUFFICIENT_PERMISSIONS,
+} from "../utils/errorConstants";
 import findById from "../utils/findById";
 
 interface UpdateOperationArgs {
@@ -15,6 +23,8 @@ interface UpdateOperationArgs {
 	id?: string;
 	newData?: Record<string, any>;
 	res: Response;
+	req: Request;
+	securityRules?: SecurityRules;
 }
 
 interface DataToUpdate extends Record<string, any> {
@@ -22,7 +32,7 @@ interface DataToUpdate extends Record<string, any> {
 }
 
 const updateOperation = async (args: UpdateOperationArgs) => {
-	const { collectionName, db, id, res, newData } = args;
+	const { collectionName, db, id, res, newData, securityRules, req } = args;
 	try {
 		if (!newData)
 			return errorResponse({
@@ -48,6 +58,24 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 		docExists = await findById(collectionName, id, db);
 
 		if (docExists) {
+			// Check for access to update
+			const dataPostUpdate = deepMerge(
+				docExists,
+				unflatten(dataToUpdate) as Partial<Object>
+			);
+			const isAccessAllowed = await isAllowedBySecurityRules(
+				{
+					req,
+					operation: "update",
+					resource: docExists,
+					newResource: dataPostUpdate,
+					id,
+					collection: collectionName,
+				},
+				securityRules
+			);
+			if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
+
 			const isObjectId = ObjectId.isValid(id);
 
 			const response = await collection.updateOne(
