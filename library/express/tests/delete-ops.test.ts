@@ -1,6 +1,6 @@
-import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
+import { describe, beforeAll, afterAll, it, expect, jest } from "@jest/globals";
 import { NextFunction, Request, Response } from "express";
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { connect, disconnect } from "./utils/mongodb";
 import mongodbRouteHandler from "../src";
 import { res, generateRequest, next } from "./__mocks__/express";
@@ -39,6 +39,16 @@ describe("Delete Operation Tests", () => {
 		expect(responseReceived.status).toBe(401);
 
 		routeHandler = originalRouteHandler;
+	});
+
+	it("should return error in case document id is not passed", async () => {
+		const req = generateRequest({
+			collectionName: "projects",
+			operation: "delete",
+		});
+		const responseReceived = await routeHandler(req, res, next);
+		expect(responseReceived.error).toMatch(/Document ID Required/);
+		expect(responseReceived.status).toBe(400);
 	});
 
 	it("should return error in case document is not found", async () => {
