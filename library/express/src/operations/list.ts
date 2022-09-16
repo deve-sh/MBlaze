@@ -4,6 +4,7 @@ import type { SecurityRules } from "../types/securityRules";
 
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 import errorResponse from "../utils/error";
+import { INSUFFICIENT_PERMISSIONS } from "../utils/errorConstants";
 
 interface ListOperationArgs {
 	collectionName: string;
@@ -37,12 +38,7 @@ const listOperation = async (args: ListOperationArgs) => {
 			},
 			securityRules
 		);
-		if (!isAccessAllowed)
-			return errorResponse({
-				status: 401,
-				message: "Insufficient Permissions",
-				res,
-			});
+		if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
 		const collection = db.collection(collectionName);
 		const documents = await collection
 			.find(filters || {})

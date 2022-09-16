@@ -6,6 +6,7 @@ import {
 } from "mongodb";
 
 import errorResponse from "../utils/error";
+import { DOCUMENT_NOT_FOUND } from "../utils/errorConstants";
 import findById from "../utils/findById";
 
 interface UpdateOperationArgs {
@@ -60,12 +61,7 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 					res,
 				});
 			return res.status(200).json(response);
-		} else
-			return errorResponse({
-				status: 404,
-				message: "Document not found.",
-				res,
-			});
+		} else return DOCUMENT_NOT_FOUND(res);
 	} catch (error: any) {
 		const errorStatus = error instanceof MongoServerError ? 400 : 500;
 		return errorResponse({ status: errorStatus, message: error.message, res });

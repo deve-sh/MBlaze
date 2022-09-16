@@ -6,6 +6,10 @@ import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules"
 import deleteOne from "../utils/deleteOne";
 import errorResponse from "../utils/error";
 import findById from "../utils/findById";
+import {
+	DOCUMENT_NOT_FOUND,
+	INSUFFICIENT_PERMISSIONS,
+} from "../utils/errorConstants";
 
 interface DeleteOperationArgs {
 	collectionName: string;
@@ -36,18 +40,8 @@ const deleteOperation = async (args: DeleteOperationArgs) => {
 		},
 		securityRules
 	);
-	if (!isAccessAllowed)
-		return errorResponse({
-			status: 401,
-			message: "Insufficient Permissions",
-			res,
-		});
-	if (!document)
-		return errorResponse({
-			status: 404,
-			message: "Document not found",
-			res,
-		});
+	if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
+	if (!document) return DOCUMENT_NOT_FOUND(res);
 	const { error: deletionError } = await deleteOne(collectionName, id, db);
 	if (deletionError)
 		return errorResponse({
