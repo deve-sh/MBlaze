@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v3
         if: ${{ env.RUN_TESTS == 'true' }}
         with:
-          node-version: 16
+          node-version: 14
 
       - name: Run Tests
         if: ${{ env.RUN_TESTS == 'true' }}

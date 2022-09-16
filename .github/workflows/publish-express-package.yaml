@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-node@v3
         if: ${{ env.AUTO_PUBLISH_PACKAGE == 'true' && env.NODE_AUTH_TOKEN }}
         with:
-          node-version: 16
+          node-version: 14
 
       - name: Publish Package
         if: ${{ env.AUTO_PUBLISH_PACKAGE == 'true' && env.NODE_AUTH_TOKEN }}
