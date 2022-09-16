@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import {
 	Db as MongoDBDatabaseInstance,
 	Document,
@@ -7,8 +7,14 @@ import {
 	OptionalId,
 	WithId,
 } from "mongodb";
+import deepMerge from "deepmerge";
+import { unflatten } from "flat";
+
+import type { SecurityRules } from "../types/securityRules";
+import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 
 import errorResponse from "../utils/error";
+import { INSUFFICIENT_PERMISSIONS } from "../utils/errorConstants";
 import findById from "../utils/findById";
 
 interface SetOperationArgs {
@@ -17,7 +23,9 @@ interface SetOperationArgs {
 	id?: string;
 	newData?: Record<string, any>;
 	res: Response;
+	req: Request;
 	merge: boolean;
+	securityRules?: SecurityRules;
 }
 
 interface DataToInsert extends Record<string, any> {
@@ -27,7 +35,16 @@ interface DataToInsert extends Record<string, any> {
 }
 
 const setOperation = async (args: SetOperationArgs) => {
-	const { collectionName, db, id, res, newData, merge = false } = args;
+	const {
+		collectionName,
+		db,
+		id,
+		res,
+		newData,
+		req,
+		securityRules,
+		merge = false,
+	} = args;
 	try {
 		if (!newData)
 			return errorResponse({
@@ -50,6 +67,24 @@ const setOperation = async (args: SetOperationArgs) => {
 				const isObjectId = ObjectId.isValid(id);
 				dataToInsert.createdAt = docAlreadyExists.createdAt;
 
+				// Security Rules
+				const dataPostUpdate = deepMerge(
+					docAlreadyExists,
+					unflatten(dataToInsert) as Partial<Object>
+				);
+				const isAccessAllowed = await isAllowedBySecurityRules(
+					{
+						req,
+						operation: "update",
+						resource: docAlreadyExists,
+						newResource: !merge ? dataPostUpdate : dataToInsert,
+						id,
+						collection: collectionName,
+					},
+					securityRules
+				);
+				if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
+
 				const filters = isObjectId ? { _id: new ObjectId(id) } : { _id: id };
 				let response;
 				if (merge) {
@@ -68,7 +103,19 @@ const setOperation = async (args: SetOperationArgs) => {
 			}
 		}
 
-		dataToInsert._id = id;
+		// Check for security rules before insertion
+		const isInsertionAllowed = await isAllowedBySecurityRules(
+			{
+				req,
+				resource: null,
+				newResource: unflatten(dataToInsert) as Partial<Object>,
+				collection: collectionName,
+				id: id || undefined,
+				operation: "create",
+			},
+			securityRules
+		);
+		if (!isInsertionAllowed) return INSUFFICIENT_PERMISSIONS(res);
 		const response = await collection.insertOne(
 			dataToInsert as OptionalId<Document>
 		);

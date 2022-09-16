@@ -63,7 +63,7 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 				docExists,
 				unflatten(dataToUpdate) as Partial<Object>
 			);
-			const isAccessAllowed = await isAllowedBySecurityRules(
+			const isUpdationAllowed = await isAllowedBySecurityRules(
 				{
 					req,
 					operation: "update",
@@ -74,7 +74,7 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 				},
 				securityRules
 			);
-			if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
+			if (!isUpdationAllowed) return INSUFFICIENT_PERMISSIONS(res);
 
 			const isObjectId = ObjectId.isValid(id);
 

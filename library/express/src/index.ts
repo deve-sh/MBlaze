@@ -74,6 +74,8 @@ const mongodbRouteHandler = (
 				res,
 				newData: newData,
 				merge: merge || false,
+				req,
+				securityRules,
 			});
 		if (operation === "update")
 			return updateOperation({
@@ -82,6 +84,8 @@ const mongodbRouteHandler = (
 				db,
 				res,
 				newData: newData,
+				securityRules,
+				req,
 			});
 		if (operation === "delete")
 			return deleteOperation({
