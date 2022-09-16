@@ -94,3 +94,11 @@ const securityRules = {
     ...
 }
 ```
+
+---
+
+#### Features Worth Looking Forward To
+
+- Transactions
+- Atomic Array Operations (ArrayUnion and ArrayRemove)
+- Server Timestamps
