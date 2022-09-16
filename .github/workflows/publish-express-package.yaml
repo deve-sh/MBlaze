@@ -10,22 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AUTO_PUBLISH_PACKAGE: ${{ secrets.AUTO_PUBLISH_PACKAGE }}
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     steps:
       - name: Checkout Files
         uses: actions/checkout@v2
 
-      - name: Setup Node.js
+      - name: Setup Node.js and Release
         uses: actions/setup-node@v3
-        if: ${{ env.AUTO_PUBLISH_PACKAGE == 'true' && env.NODE_AUTH_TOKEN }}
+        if: ${{ env.AUTO_PUBLISH_PACKAGE == 'true' }}
         with:
           node-version: 14
-
-      - name: Publish Package
-        if: ${{ env.AUTO_PUBLISH_PACKAGE == 'true' && env.NODE_AUTH_TOKEN }}
         run: |
           cd ./library/express
           npm install
           npm run test
           npm run pub
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
