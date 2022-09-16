@@ -23,7 +23,7 @@ const getOperation = async (args: GetOperationArgs) => {
 	const { collectionName, id, db, res, req, securityRules } = args;
 	if (!id) return DOCUMENT_ID_REQUIRED(res);
 	const document = await findById(collectionName, id, db);
-	const isAccessAllowed = await isAllowedBySecurityRules(
+	const isGetOpAllowed = await isAllowedBySecurityRules(
 		{
 			operation: "get",
 			resource: document,
@@ -33,7 +33,7 @@ const getOperation = async (args: GetOperationArgs) => {
 		},
 		securityRules
 	);
-	if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
+	if (!isGetOpAllowed) return INSUFFICIENT_PERMISSIONS(res);
 	if (!document) return DOCUMENT_NOT_FOUND(res);
 	return res.status(200).json({ document });
 };

@@ -29,7 +29,7 @@ const listOperation = async (args: ListOperationArgs) => {
 		securityRules,
 	} = args;
 	try {
-		const isAccessAllowed = await isAllowedBySecurityRules(
+		const isListOpAllowed = await isAllowedBySecurityRules(
 			{
 				req,
 				filters,
@@ -38,7 +38,7 @@ const listOperation = async (args: ListOperationArgs) => {
 			},
 			securityRules
 		);
-		if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
+		if (!isListOpAllowed) return INSUFFICIENT_PERMISSIONS(res);
 		const collection = db.collection(collectionName);
 		const documents = await collection
 			.find(filters || {})

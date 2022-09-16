@@ -30,7 +30,7 @@ const deleteOperation = async (args: DeleteOperationArgs) => {
 		});
 
 	const document = await findById(collectionName, id, db);
-	const isAccessAllowed = await isAllowedBySecurityRules(
+	const isDeletionAllowed = await isAllowedBySecurityRules(
 		{
 			req,
 			collection: collectionName,
@@ -40,7 +40,7 @@ const deleteOperation = async (args: DeleteOperationArgs) => {
 		},
 		securityRules
 	);
-	if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
+	if (!isDeletionAllowed) return INSUFFICIENT_PERMISSIONS(res);
 	if (!document) return DOCUMENT_NOT_FOUND(res);
 	const { error: deletionError } = await deleteOne(collectionName, id, db);
 	if (deletionError)
