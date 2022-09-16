@@ -215,4 +215,49 @@ describe("Test suite for security rules", () => {
 			await isAllowedBySecurityRules(createOperation, mockSecurityRules)
 		).toBe(true);
 	});
+
+	it("should return false in case of any invalid decider type", async () => {
+		const mockSecurityRules = {
+			create: "allowed",
+		};
+		const createOperation: SecurityRulesCheckerArgs = {
+			collection: "projects",
+			operation: "create",
+			id: "project1",
+			newResource: { field: "value" },
+		};
+		expect(
+			await isAllowedBySecurityRules(createOperation, mockSecurityRules)
+		).toBe(false);
+	});
+
+	it("should return false if empty security rules are passed", async () => {
+		const mockSecurityRules = {};
+		const createOperation: SecurityRulesCheckerArgs = {
+			collection: "projects",
+			operation: "create",
+			id: "project1",
+			newResource: { field: "value" },
+		};
+		expect(
+			await isAllowedBySecurityRules(createOperation, mockSecurityRules)
+		).toBe(false);
+	});
+
+	it("should return false if security rules decider or other block throws an error", async () => {
+		const mockSecurityRules = {
+			write: () => {
+				throw new Error("Mocked Security Rules error");
+			},
+		};
+		const createOperation: SecurityRulesCheckerArgs = {
+			collection: "projects",
+			operation: "create",
+			id: "project1",
+			newResource: { field: "value" },
+		};
+		expect(
+			await isAllowedBySecurityRules(createOperation, mockSecurityRules)
+		).toBe(false);
+	});
 });
