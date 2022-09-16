@@ -59,8 +59,12 @@ describe("Test suite for security rules", () => {
 			collection: "projects",
 			operation: "update",
 			filters: { field: "value" },
-			resource: { field: "existing_value" },
-			newResource: { field: "new_value", field1: "new_field" },
+			resource: { field: "existing_value", unaffected_field: "unaffected" },
+			newResource: {
+				field: "new_value",
+				field1: "new_field",
+				unaffected_field: "unaffected",
+			},
 		};
 		const deleteOperation: SecurityRulesCheckerArgs = {
 			collection: "projects",
@@ -91,6 +95,9 @@ describe("Test suite for security rules", () => {
 		// Update args checks
 		expect(updationArgsPassed.operation).toBe("update");
 		expect(updationArgsPassed.resource.field).toEqual("existing_value");
+		expect(updationArgsPassed.resource.unaffected_field).toEqual(
+			updationArgsPassed.newResource.unaffected_field
+		);
 		expect(updationArgsPassed.newResource.field).toEqual("new_value");
 		expect(updationArgsPassed.newResource.field1).toEqual("new_field");
 		// List args checks
