@@ -9,6 +9,8 @@ class DB {
 			throw new Error("Backend Endpoint not provided at instantiation: DB");
 
 		this.backendEndpoint = backendEndpoint;
+		((global || globalThis || window) as any).mBlazeBackendendpoint =
+			backendEndpoint;
 	}
 
 	public collection(collectionName: string) {
@@ -25,7 +27,7 @@ class DB {
 		)
 			throw new Error("Document ID not provided.");
 		const [collectionName, docId] = collectionPlusDocId.split("/");
-		return new Doc(this.backendEndpoint, collectionName, docId);
+		return new Doc(collectionName, docId);
 	}
 }
 
