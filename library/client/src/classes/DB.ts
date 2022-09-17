@@ -1,5 +1,5 @@
 import Collection from "./Collection";
-import Doc from "./Doc";
+import DocRef from "./DocRef";
 
 class DB {
 	private backendEndpoint: string;
@@ -27,7 +27,7 @@ class DB {
 		)
 			throw new Error("Document ID not provided.");
 		const [collectionName, docId] = collectionPlusDocId.split("/");
-		return new Doc(collectionName, docId);
+		return new DocRef(collectionName, docId);
 	}
 }
 
