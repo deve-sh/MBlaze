@@ -1,0 +1,19 @@
+{
+	"name": "mblaze",
+	"version": "0.0.1",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"compile": "tsc",
+		"prepub": "node ./scripts/prepublish.js",
+		"pub": "cd dist & npm publish"
+	},
+	"keywords": [
+		"mongodb"
+	],
+	"devDependencies": {
+		"typescript": "^4.8.3"
+	},
+	"author": "Devesh Kumar",
+	"license": "MIT"
+}
