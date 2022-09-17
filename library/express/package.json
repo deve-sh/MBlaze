@@ -17,8 +17,8 @@
 		"middleware",
 		"firestore"
 	],
-	"author": "",
-	"license": "ISC",
+	"author": "Devesh Kumar",
+	"license": "MIT",
 	"devDependencies": {
 		"@babel/core": "^7.19.0",
 		"@babel/preset-env": "^7.19.0",
