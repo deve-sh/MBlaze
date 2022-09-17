@@ -1,6 +1,10 @@
+import comparatorType from "../types/comparator";
+import Doc from "./Doc";
+
 class Collection {
 	private backendEndpoint: string;
 	private collectionName: string;
+	private docId?: string = undefined;
 
 	constructor(backendEndpoint: string, collectionName: string) {
 		if (!backendEndpoint)
@@ -16,6 +20,15 @@ class Collection {
 		this.backendEndpoint = backendEndpoint;
 		this.collectionName = collectionName;
 	}
+
+	where(fieldName: string, comparator: comparatorType, value: any) {}
+
+	doc(docId: string) {
+		this.docId = docId;
+		return new Doc(this.backendEndpoint, this.collectionName, this.docId);
+	}
+
+	get() {}
 }
 
 export default Collection;
