@@ -1,7 +1,7 @@
 import DB from "./classes/DB";
-import Collection from "./classes/Collection";
-import Doc from "./classes/Doc";
+import CollectionRef from "./classes/Collection";
+import DocRef from "./classes/DocRef";
 
 export default DB;
 
-export { DB, Collection, Doc };
+export { DB, CollectionRef, DocRef };
