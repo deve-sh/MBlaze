@@ -1,7 +1,7 @@
 class Doc {
 	private backendEndpoint: string;
-	private collectionName: string;
-	private docId: string;
+	public collectionName: string;
+	public id: string;
 
 	constructor(backendEndpoint: string, collectionName: string, docId: string) {
 		if (!backendEndpoint)
@@ -15,8 +15,16 @@ class Doc {
 
 		this.backendEndpoint = backendEndpoint;
 		this.collectionName = collectionName;
-		this.docId = docId;
+		this.id = docId;
 	}
+
+	get() {}
+
+	set() {}
+
+	update() {}
+
+	delete() {}
 }
 
 export default Doc;
