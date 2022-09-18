@@ -173,4 +173,45 @@ describe("List Operation Tests", () => {
 		expect(responseReceived.documents).toHaveLength(2);
 		expect(responseReceived.status).toBe(200);
 	});
+
+	it("should return all correct documents matching limit, offset and sort properties", async () => {
+		// First create documents
+		let req1 = generateRequest({
+			collectionName: "projects",
+			operation: "set",
+			newData: { field: "value" },
+			id: "project1",
+		});
+		let req2 = generateRequest({
+			collectionName: "projects",
+			operation: "set",
+			newData: { field: "value" },
+			id: "project2",
+		});
+		let req3 = generateRequest({
+			collectionName: "projects",
+			operation: "set",
+			newData: { field: "value" },
+			id: "project3",
+		});
+		await routeHandler(req1, res, next);
+		await routeHandler(req2, res, next);
+		await routeHandler(req3, res, next);
+
+		// Now find documents
+		const req = generateRequest({
+			collectionName: "projects",
+			operation: "list",
+			filters: { field: "value" },
+			sortBy: "createdAt",
+			sortOrder: "desc",
+			limit: 2,
+			offset: 1,
+		});
+		const responseReceived = await routeHandler(req, res, next);
+		expect(responseReceived.status).toBe(200);
+		expect(responseReceived.documents).toHaveLength(2);
+		expect(responseReceived.documents[0]._id).toEqual("project2");
+		expect(responseReceived.documents[1]._id).toEqual("project1");
+	});
 });
