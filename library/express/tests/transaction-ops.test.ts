@@ -1,5 +1,5 @@
 import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction } from "express";
 import { Db, MongoClient } from "mongodb";
 import { generateRequest, res } from "./__mocks__/express";
 
@@ -78,18 +78,18 @@ describe("Transaction (ACID) Related Tests", () => {
 		expect(responseReceived.status).toEqual(500);
 	});
 
-	it("should return a success response if transaction succeeds", async () => {
-		const securityRules = { read: true, write: true };
-		const routeHandler = mongodbRouteHandler(db, securityRules, connection);
-		const req = generateRequest([
-			{
-				collectionName: "projects",
-				id: "project",
-				operation: "set",
-				newData: { a: 1 },
-			},
-		]);
-		const responseReceived = await routeHandler(req, res, next);
-		expect(responseReceived.status).toEqual(200);
-	});
+	// it("should return a success response if transaction succeeds", async () => {
+	// 	const securityRules = { read: true, write: true };
+	// 	const routeHandler = mongodbRouteHandler(db, securityRules, connection);
+	// 	const req = generateRequest([
+	// 		{
+	// 			collectionName: "projects",
+	// 			id: "project",
+	// 			operation: "set",
+	// 			newData: { a: 1 },
+	// 		},
+	// 	]);
+	// 	const responseReceived = await routeHandler(req, res, next);
+	// 	expect(responseReceived.status).toEqual(200);
+	// });
 });
