@@ -89,11 +89,7 @@ const transaction = async (args: TransactionControllerArgs) => {
 			.json({ message: "Operations successfully completed." });
 	} catch (error: any) {
 		await session.abortTransaction();
-		return errorResponse({
-			status: 500,
-			message: error.message || "Transaction Failed, please try again later.",
-			res,
-		});
+		return errorResponse({ status: 500, message: error.message, res });
 	} finally {
 		await session.endSession();
 	}

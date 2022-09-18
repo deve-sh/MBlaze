@@ -41,6 +41,17 @@ describe("Transaction (ACID) Related Tests", () => {
 		);
 	});
 
+	it("should return an error response if no operations are passed", async () => {
+		const securityRules = { read: false, write: false };
+		const routeHandler = mongodbRouteHandler(db, securityRules, connection);
+		const req = generateRequest([]);
+		const responseReceived = await routeHandler(req, res, next);
+		expect(responseReceived.status).toEqual(400);
+		expect(responseReceived.error).toMatch(
+			/No operations passed for transaction/
+		);
+	});
+
 	it("should return an error response if transaction fails", async () => {
 		const securityRules = { read: false, write: false };
 		const routeHandler = mongodbRouteHandler(db, securityRules, connection);
@@ -55,6 +66,12 @@ describe("Transaction (ACID) Related Tests", () => {
 				collectionName: "projects",
 				id: "project1",
 				operation: "delete",
+			},
+			{
+				collectionName: "projects",
+				id: "project3",
+				operation: "update",
+				newData: { field: "updated_value" },
 			},
 		]);
 		const responseReceived = await routeHandler(req, res, next);
