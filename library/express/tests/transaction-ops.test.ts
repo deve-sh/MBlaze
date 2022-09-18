@@ -77,4 +77,19 @@ describe("Transaction (ACID) Related Tests", () => {
 		const responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.status).toEqual(500);
 	});
+
+	it("should return a success response if transaction succeeds", async () => {
+		const securityRules = { read: true, write: true };
+		const routeHandler = mongodbRouteHandler(db, securityRules, connection);
+		const req = generateRequest([
+			{
+				collectionName: "projects",
+				id: "project",
+				operation: "set",
+				newData: { a: 1 },
+			},
+		]);
+		const responseReceived = await routeHandler(req, res, next);
+		expect(responseReceived.status).toEqual(200);
+	});
 });
