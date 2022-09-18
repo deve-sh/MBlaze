@@ -13,7 +13,16 @@ interface OpRequesterArgs {
 	merge?: boolean;
 }
 
-const handleError = (error: any) => {
+interface errorTypes {
+	error: Record<string, any> | null;
+	errorResponse?: Record<string, any>;
+	errorMessage?: string;
+	errorStatus?: number;
+	appLevelError?: boolean;
+	noResponse?: boolean;
+}
+
+const handleError = (error: any): errorTypes => {
 	if (error.response) {
 		const errorResponse = error.response.data;
 		const errorStatus = error.response.status;
@@ -21,9 +30,13 @@ const handleError = (error: any) => {
 
 		return { error, errorResponse, errorStatus, errorMessage };
 	} else if (error.request) {
-		return { error, noResponse: true };
+		return {
+			error,
+			noResponse: true,
+			errorMessage: "No response was received from the database",
+		};
 	} else {
-		return { error, appLevelError: true };
+		return { error, appLevelError: true, errorMessage: error.message };
 	}
 };
 
@@ -40,13 +53,25 @@ const handleResponse = ({
 	offset,
 }: HandleResponseArgs) => {
 	if (operation === "get")
-		return { response: { data: data.document || null, id, collectionName } };
+		return {
+			error: null,
+			response: { data: data.document || null, id, collectionName },
+		};
 	if (operation === "list")
-		return { response: { docs: data.documents || [], limit, offset } };
-	return { response: {} };
+		return {
+			error: null,
+			response: { docs: data.documents || [], limit, offset },
+		};
+	return { error: null, response: {} };
 };
 
-const sendSingleOpRequest = async (args: OpRequesterArgs) => {
+interface opReturnType extends errorTypes {
+	response?: Record<string, any> | null;
+}
+
+const sendSingleOpRequest = async (
+	args: OpRequesterArgs
+): Promise<opReturnType> => {
 	const { operation, newData, id, collectionName, merge } = args;
 	try {
 		const backendEndpoint = getBackendEndpoint();
