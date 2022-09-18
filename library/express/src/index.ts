@@ -38,6 +38,8 @@ const mongodbRouteHandler = (
 			offset = 0,
 			newData,
 			merge,
+			sortBy,
+			sortOrder = "asc",
 		} = req.body as MiddlewareBody;
 
 		if (!collectionName)
@@ -65,6 +67,8 @@ const mongodbRouteHandler = (
 				res,
 				req,
 				securityRules,
+				sortBy,
+				sortOrder,
 			});
 		if (operation === "set")
 			return set({

@@ -1,6 +1,7 @@
 import type { Request } from "express";
 import type { Db as MongoDBDatabaseInstance } from "mongodb";
 import type { SecurityRules } from "../types/securityRules";
+import type sortOrder from "../types/sortOrder";
 
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 import { INSUFFICIENT_PERMISSIONS } from "../utils/errorConstants";
@@ -13,6 +14,8 @@ interface ListOperationArgs {
 	offset: number;
 	req: Request;
 	securityRules?: SecurityRules;
+	sortBy?: string;
+	sortOrder: sortOrder;
 }
 
 const listOperation = async (args: ListOperationArgs) => {
@@ -24,6 +27,8 @@ const listOperation = async (args: ListOperationArgs) => {
 		limit = 100,
 		offset = 0,
 		securityRules,
+		sortOrder,
+		sortBy,
 	} = args;
 	try {
 		const isListOpAllowed = await isAllowedBySecurityRules(
@@ -37,11 +42,12 @@ const listOperation = async (args: ListOperationArgs) => {
 		);
 		if (!isListOpAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 		const collection = db.collection(collectionName);
-		const documents = await collection
+		let collectionFetchRef = collection
 			.find(filters || {})
 			.limit(limit)
-			.skip(offset)
-			.toArray();
+			.skip(offset);
+		if (sortBy) collectionFetchRef = collectionFetchRef.sort(sortBy, sortOrder);
+		const documents = await collectionFetchRef.toArray();
 		return { error: null, documents };
 	} catch (err: any) {
 		return { error: { status: 500, message: err.message } };

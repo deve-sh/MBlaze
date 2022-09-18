@@ -1,6 +1,7 @@
 import type { Response, Request } from "express";
 import type { Db as MongoDBDatabaseInstance } from "mongodb";
 import type { SecurityRules } from "../types/securityRules";
+import type sortOrder from "../types/sortOrder";
 
 import errorResponse from "../utils/error";
 import listOperation from "../operations/list";
@@ -14,6 +15,8 @@ interface ListControllerArgs {
 	res: Response;
 	req: Request;
 	securityRules?: SecurityRules;
+	sortBy?: string;
+	sortOrder: sortOrder;
 }
 
 const list = async (args: ListControllerArgs) => {
