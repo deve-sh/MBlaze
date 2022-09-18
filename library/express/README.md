@@ -8,11 +8,11 @@ Sets up a single route (A lot like a GraphQL server) on your server, usually at 
 
 **Note**: There is a peer dependency of `mongodb`, so make sure you have version >=4.9.0 installed in your express project before using the middleware.
 
-#### API Route Documentation
+### API Route Documentation
 
 The Postman Collection with examples for all currently supported operations can be found [here](https://documenter.getpostman.com/view/15937596/2s7YYpfmEP).
 
-#### Using Mongoose
+### Using Mongoose
 
 If you're not using `mongodb` directly and instead using `mongoose` for your operations already in your project, you can retreive the `db` instance from the mongoose connection object.
 
@@ -25,7 +25,7 @@ app.use("/mongodb", mongodbRouteHandler(db));
 
 **Note:** Make sure the connection is already established before extracting, otherwise the value of `db` would be `undefined`.
 
-#### Security Rules
+### Security Rules
 
 You can specify security rules for your collections while instantiating the route handler.
 
@@ -97,8 +97,55 @@ const securityRules = {
 
 ---
 
-#### Features Worth Looking Forward To
+### Transactions
 
-- Transactions
+One of the things that makes MongoDB great is transactions.
+
+**Note**: Make sure the MongoDB database you're using has replica sets, MongoDB only supports transactions on replica sets.
+
+To enable transactions with MBlaze, update the initializer statement:
+
+```javascript
+// In case of mongoose
+await mongoose.connect(...);
+const db = mongoose.connection.db;
+app.use("/mongodb", mongodbRouteHandler(db, securityRules, mongoose.connection));
+
+// In case of mongodb Node.js driver.
+new MongoClient(MONGODB_URI).connect((err, client) => {
+    const db = client.db(MONGODB_DBNAME);
+    app.use("/mongodb", mongodbRouteHandler(db, securityRules, client));
+})
+```
+
+Then in order to use transactions for your operations, simply make a request with an array of operations (Only writes supported, except for the read operations that happen internally) instead of a single operation object.
+
+```
+POST /mongodb
+
+body: [
+    {
+        collectionName: 'projects',
+        id: 'project1',
+        operation: 'delete'
+    },
+    {
+        collectionName: 'tasks',
+        id: 'task1',
+        operation: 'update',
+        newData: {
+            'field.nestedField.nestedValue': 'updated_value'
+        }
+    }
+]
+```
+
+The above operations will automatically be run as a transaction.
+All transaction operations are subject to the same security rules as regular operations.
+
+---
+
+### Features Worth Looking Forward To
+
 - Atomic Array Operations (ArrayUnion and ArrayRemove)
 - Server Timestamps
