@@ -1,10 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
-import { Db as MongoDBDatabaseInstanace } from "mongodb";
-import type MiddlewareBody from "./types/MiddlewareBody";
+import type { Db as MongoDBDatabaseInstanace } from "mongodb";
 
+import type { RegularMiddlewareBody } from "./types/MiddlewareBody";
 import type { SecurityRules } from "./types/securityRules";
 
-// Operations
+// Op Controllers
 import get from "./controllers/get";
 import list from "./controllers/list";
 import deleteController from "./controllers/delete";
@@ -29,6 +29,11 @@ const mongodbRouteHandler = (
 		res: Response,
 		next: NextFunction
 	): Promise<any> => {
+		if (Array.isArray(req.body)) {
+			// Transaction support coming soon
+			return next();
+		}
+
 		const {
 			collectionName,
 			filters,
@@ -40,7 +45,7 @@ const mongodbRouteHandler = (
 			merge,
 			sortBy,
 			sortOrder = "asc",
-		} = req.body as MiddlewareBody;
+		} = req.body as RegularMiddlewareBody;
 
 		if (!collectionName)
 			return errorResponse({
