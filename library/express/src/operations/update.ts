@@ -1,10 +1,5 @@
 import type { Request } from "express";
-import {
-	Db as MongoDBDatabaseInstance,
-	MongoServerError,
-	ObjectId,
-	UpdateResult,
-} from "mongodb";
+import { Db, MongoServerError } from "mongodb";
 import deepMerge from "deepmerge";
 import { unflatten } from "flat";
 
@@ -16,10 +11,11 @@ import {
 	INSUFFICIENT_PERMISSIONS,
 } from "../utils/errorConstants";
 import findById from "../utils/findById";
+import getAppropriateId from "../utils/getAppropriateId";
 
 interface UpdateOperationArgs {
 	collectionName: string;
-	db: MongoDBDatabaseInstance;
+	db: Db;
 	id?: string;
 	newData?: Record<string, any>;
 	req: Request;
@@ -77,10 +73,11 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 			);
 			if (!isUpdationAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 
-			const isObjectId = ObjectId.isValid(id);
+			delete dataToUpdate.id;
+			delete dataToUpdate._id;
 
 			const response = await collection.updateOne(
-				isObjectId ? { _id: new ObjectId(id) } : { _id: id },
+				{ _id: getAppropriateId(id) },
 				{ $set: dataToUpdate }
 			);
 			if (!response.acknowledged || !response.modifiedCount)

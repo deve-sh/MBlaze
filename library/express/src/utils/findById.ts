@@ -1,11 +1,9 @@
-import { Db, ObjectId } from "mongodb";
+import { Db } from "mongodb";
+import getAppropriateId from "./getAppropriateId";
 
 const findById = async (collectionName: string, id: string, db: Db) => {
 	const collection = db.collection(collectionName);
-	const isObjectId = ObjectId.isValid(id);
-	const document = await collection.findOne(
-		isObjectId ? { _id: new ObjectId(id) } : { _id: id }
-	);
+	const document = await collection.findOne({ _id: getAppropriateId(id) });
 	return document;
 };
 

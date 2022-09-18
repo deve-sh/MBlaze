@@ -78,4 +78,33 @@ describe("Update Operation Tests", () => {
 		expect(responseReceived.acknowledged).toEqual(true);
 		expect(responseReceived.modifiedCount).toEqual(1);
 	});
+
+	it("should not update id of a document even if passed in newData", async () => {
+		// First create data
+		let req = generateRequest({
+			collectionName: "projects",
+			operation: "set",
+			id: "project1",
+			newData: { field: "value" },
+		});
+		await routeHandler(req, res, next);
+
+		// Now update the created data
+		req = generateRequest({
+			collectionName: "projects",
+			operation: "update",
+			id: "project1",
+			newData: { field: "updated_value", id: "project2" },
+		});
+		await routeHandler(req, res, next);
+
+		// Now read the updated document
+		req = generateRequest({
+			collectionName: "projects",
+			operation: "get",
+			id: "project1",
+		});
+		const responseReceived = await routeHandler(req, res, next);
+		expect(responseReceived.document._id).toEqual("project1");
+	});
 });

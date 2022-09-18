@@ -13,9 +13,9 @@ import { unflatten } from "flat";
 import type { SecurityRules } from "../types/securityRules";
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 
-import errorResponse from "../utils/error";
 import { INSUFFICIENT_PERMISSIONS } from "../utils/errorConstants";
 import findById from "../utils/findById";
+import getAppropriateId from "../utils/getAppropriateId";
 
 interface SetOperationArgs {
 	collectionName: string;
@@ -63,7 +63,6 @@ const setOperation = async (args: SetOperationArgs) => {
 			docAlreadyExists = await findById(collectionName, id, db);
 
 			if (docAlreadyExists) {
-				const isObjectId = ObjectId.isValid(id);
 				dataToInsert.createdAt = docAlreadyExists.createdAt;
 
 				// Security Rules
@@ -84,7 +83,9 @@ const setOperation = async (args: SetOperationArgs) => {
 				);
 				if (!isAccessAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 
-				const filters = isObjectId ? { _id: new ObjectId(id) } : { _id: id };
+				delete dataToInsert._id;
+				delete dataToInsert.id;
+				const filters = { _id: getAppropriateId(id) };
 				let response;
 				if (merge) {
 					response = await collection.updateOne(filters, {
@@ -105,7 +106,7 @@ const setOperation = async (args: SetOperationArgs) => {
 
 		// Check for security rules before insertion
 		dataToInsert._id = id || new ObjectId().toString();
-		dataToInsert.id = dataToInsert._id;
+		dataToInsert.id = dataToInsert._id.toString();
 		const isInsertionAllowed = await isAllowedBySecurityRules(
 			{
 				req,
