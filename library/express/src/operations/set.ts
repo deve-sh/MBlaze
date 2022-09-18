@@ -1,5 +1,6 @@
-import type { Request, Response } from "express";
+import type { Request } from "express";
 import {
+	ClientSession,
 	Db as MongoDBDatabaseInstance,
 	Document,
 	MongoServerError,
@@ -25,6 +26,7 @@ interface SetOperationArgs {
 	req: Request;
 	merge: boolean;
 	securityRules?: SecurityRules;
+	session?: ClientSession;
 }
 
 interface DataToInsert extends Record<string, any> {
@@ -42,6 +44,7 @@ const setOperation = async (args: SetOperationArgs) => {
 		req,
 		securityRules,
 		merge = false,
+		session,
 	} = args;
 	try {
 		if (!newData)
@@ -60,7 +63,7 @@ const setOperation = async (args: SetOperationArgs) => {
 
 		let docAlreadyExists: boolean | WithId<Document> | null = false;
 		if (id) {
-			docAlreadyExists = await findById(collectionName, id, db);
+			docAlreadyExists = await findById(collectionName, id, db, session);
 
 			if (docAlreadyExists) {
 				dataToInsert.createdAt = docAlreadyExists.createdAt;
@@ -88,10 +91,15 @@ const setOperation = async (args: SetOperationArgs) => {
 				const filters = { _id: getAppropriateId(id) };
 				let response;
 				if (merge) {
-					response = await collection.updateOne(filters, {
-						$set: dataToInsert,
+					response = await collection.updateOne(
+						filters,
+						{ $set: dataToInsert },
+						{ session }
+					);
+				} else
+					response = await collection.replaceOne(filters, dataToInsert, {
+						session,
 					});
-				} else response = await collection.replaceOne(filters, dataToInsert);
 
 				if (!response.acknowledged || !response.modifiedCount)
 					return {
@@ -120,7 +128,8 @@ const setOperation = async (args: SetOperationArgs) => {
 		);
 		if (!isInsertionAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 		const response = await collection.insertOne(
-			dataToInsert as OptionalId<Document>
+			dataToInsert as OptionalId<Document>,
+			{ session }
 		);
 		if (!response.acknowledged)
 			return {

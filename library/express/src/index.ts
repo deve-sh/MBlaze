@@ -1,10 +1,14 @@
 import type { NextFunction, Request, Response } from "express";
-import type { Db as MongoDBDatabaseInstanace } from "mongodb";
+import type { Db as MongoDBDatabaseInstanace, MongoClient } from "mongodb";
 
-import type { RegularMiddlewareBody } from "./types/MiddlewareBody";
+import type {
+	RegularMiddlewareBody,
+	TranscationMiddlewareBody,
+} from "./types/MiddlewareBody";
 import type { SecurityRules } from "./types/securityRules";
 
 // Op Controllers
+import transaction from "./controllers/transaction";
 import get from "./controllers/get";
 import list from "./controllers/list";
 import deleteController from "./controllers/delete";
@@ -17,7 +21,8 @@ import errorResponse from "./utils/error";
 // Express Middleware
 const mongodbRouteHandler = (
 	db: MongoDBDatabaseInstanace,
-	securityRules?: SecurityRules
+	securityRules?: SecurityRules,
+	connection?: MongoClient
 ) => {
 	if (!db)
 		throw new Error(
@@ -30,8 +35,22 @@ const mongodbRouteHandler = (
 		next: NextFunction
 	): Promise<any> => {
 		if (Array.isArray(req.body)) {
-			// Transaction support coming soon
-			return next();
+			if (!connection)
+				return errorResponse({
+					status: 400,
+					message:
+						"Transaction support hasn't been turned on. Please pass DB Connection arg to enable it.",
+					res,
+				});
+
+			return transaction({
+				operations: req.body as TranscationMiddlewareBody[],
+				connection,
+				db,
+				req,
+				res,
+				securityRules,
+			});
 		}
 
 		const {

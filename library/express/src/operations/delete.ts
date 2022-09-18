@@ -1,5 +1,5 @@
-import type { Response, Request } from "express";
-import type { Db as MongoDBDatabaseInstance } from "mongodb";
+import type { Request } from "express";
+import type { ClientSession, Db as MongoDBDatabaseInstance } from "mongodb";
 import type { SecurityRules } from "../types/securityRules";
 
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
@@ -14,23 +14,22 @@ interface DeleteOperationArgs {
 	collectionName: string;
 	id: string;
 	db: MongoDBDatabaseInstance;
-	res: Response;
 	req: Request;
 	securityRules?: SecurityRules;
+	session?: ClientSession;
 }
 
 const deleteOperation = async (args: DeleteOperationArgs) => {
-	const { collectionName, id, db, res, req, securityRules } = args;
+	const { collectionName, id, db, req, securityRules, session } = args;
 	if (!id)
 		return {
 			error: {
 				status: 400,
 				message: "Document ID Required",
-				res,
 			},
 		};
 
-	const document = await findById(collectionName, id, db);
+	const document = await findById(collectionName, id, db, session);
 	const isDeletionAllowed = await isAllowedBySecurityRules(
 		{
 			req,
@@ -43,13 +42,17 @@ const deleteOperation = async (args: DeleteOperationArgs) => {
 	);
 	if (!isDeletionAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 	if (!document) return { error: DOCUMENT_NOT_FOUND() };
-	const { error: deletionError } = await deleteOne(collectionName, id, db);
+	const { error: deletionError } = await deleteOne(
+		collectionName,
+		id,
+		db,
+		session
+	);
 	if (deletionError)
 		return {
 			error: {
 				status: 500,
 				message: "Document could not be deleted",
-				res,
 			},
 		};
 	return { error: null, response: null };

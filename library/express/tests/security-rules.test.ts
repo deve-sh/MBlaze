@@ -268,12 +268,11 @@ describe("Test suite for security rules", () => {
 	});
 
 	it("correct values should be passed for update operation in security rule decider function", async () => {
-		let passedNewResource, passedResource;
+		let passedNewResource;
 
 		const mockSecurityRules = {
 			read: true,
-			write: ({ newResource, resource }) => {
-				passedResource = resource;
+			write: ({ newResource }) => {
 				passedNewResource = newResource;
 				return (
 					// Allow first create operation to go through

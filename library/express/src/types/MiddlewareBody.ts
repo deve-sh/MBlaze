@@ -25,6 +25,6 @@ export interface TranscationMiddlewareBody {
 	merge?: boolean;
 }
 
-type MiddlewareBody = RegularMiddlewareBody | Array<TranscationMiddlewareBody>;
+type MiddlewareBody = RegularMiddlewareBody | TranscationMiddlewareBody[];
 
 export default MiddlewareBody;
