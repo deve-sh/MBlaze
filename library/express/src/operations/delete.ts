@@ -14,19 +14,17 @@ interface DeleteOperationArgs {
 	collectionName: string;
 	id: string;
 	db: MongoDBDatabaseInstance;
-	res: Response;
 	req: Request;
 	securityRules?: SecurityRules;
 }
 
 const deleteOperation = async (args: DeleteOperationArgs) => {
-	const { collectionName, id, db, res, req, securityRules } = args;
+	const { collectionName, id, db, req, securityRules } = args;
 	if (!id)
 		return {
 			error: {
 				status: 400,
 				message: "Document ID Required",
-				res,
 			},
 		};
 
@@ -49,7 +47,6 @@ const deleteOperation = async (args: DeleteOperationArgs) => {
 			error: {
 				status: 500,
 				message: "Document could not be deleted",
-				res,
 			},
 		};
 	return { error: null, response: null };
