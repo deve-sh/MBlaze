@@ -4,7 +4,6 @@ import type { SecurityRules } from "../types/securityRules";
 
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 import deleteOne from "../utils/deleteOne";
-import errorResponse from "../utils/error";
 import findById from "../utils/findById";
 import {
 	DOCUMENT_NOT_FOUND,
@@ -23,11 +22,13 @@ interface DeleteOperationArgs {
 const deleteOperation = async (args: DeleteOperationArgs) => {
 	const { collectionName, id, db, res, req, securityRules } = args;
 	if (!id)
-		return errorResponse({
-			status: 400,
-			message: "Document ID Required",
-			res,
-		});
+		return {
+			error: {
+				status: 400,
+				message: "Document ID Required",
+				res,
+			},
+		};
 
 	const document = await findById(collectionName, id, db);
 	const isDeletionAllowed = await isAllowedBySecurityRules(
@@ -40,16 +41,18 @@ const deleteOperation = async (args: DeleteOperationArgs) => {
 		},
 		securityRules
 	);
-	if (!isDeletionAllowed) return INSUFFICIENT_PERMISSIONS(res);
-	if (!document) return DOCUMENT_NOT_FOUND(res);
+	if (!isDeletionAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
+	if (!document) return { error: DOCUMENT_NOT_FOUND() };
 	const { error: deletionError } = await deleteOne(collectionName, id, db);
 	if (deletionError)
-		return errorResponse({
-			status: 500,
-			message: "Document could not be deleted",
-			res,
-		});
-	return res.sendStatus(204);
+		return {
+			error: {
+				status: 500,
+				message: "Document could not be deleted",
+				res,
+			},
+		};
+	return { error: null, response: null };
 };
 
 export default deleteOperation;

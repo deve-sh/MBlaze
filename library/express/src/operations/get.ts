@@ -1,4 +1,4 @@
-import type { Response, Request } from "express";
+import type { Request } from "express";
 import { Db as MongoDBDatabaseInstance } from "mongodb";
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 import { SecurityRules } from "../types/securityRules";
@@ -14,14 +14,13 @@ interface GetOperationArgs {
 	collectionName: string;
 	id?: string;
 	db: MongoDBDatabaseInstance;
-	res: Response;
 	req: Request;
 	securityRules?: SecurityRules;
 }
 
 const getOperation = async (args: GetOperationArgs) => {
-	const { collectionName, id, db, res, req, securityRules } = args;
-	if (!id) return DOCUMENT_ID_REQUIRED(res);
+	const { collectionName, id, db, req, securityRules } = args;
+	if (!id) return { error: DOCUMENT_ID_REQUIRED() };
 	const document = await findById(collectionName, id, db);
 	const isGetOpAllowed = await isAllowedBySecurityRules(
 		{
@@ -33,9 +32,9 @@ const getOperation = async (args: GetOperationArgs) => {
 		},
 		securityRules
 	);
-	if (!isGetOpAllowed) return INSUFFICIENT_PERMISSIONS(res);
-	if (!document) return DOCUMENT_NOT_FOUND(res);
-	return res.status(200).json({ document });
+	if (!isGetOpAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
+	if (!document) return { error: DOCUMENT_NOT_FOUND() };
+	return { error: null, document };
 };
 
 export default getOperation;

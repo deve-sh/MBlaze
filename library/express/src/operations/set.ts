@@ -22,7 +22,6 @@ interface SetOperationArgs {
 	db: MongoDBDatabaseInstance;
 	id?: string;
 	newData?: Record<string, any>;
-	res: Response;
 	req: Request;
 	merge: boolean;
 	securityRules?: SecurityRules;
@@ -39,7 +38,6 @@ const setOperation = async (args: SetOperationArgs) => {
 		collectionName,
 		db,
 		id,
-		res,
 		newData,
 		req,
 		securityRules,
@@ -47,11 +45,12 @@ const setOperation = async (args: SetOperationArgs) => {
 	} = args;
 	try {
 		if (!newData)
-			return errorResponse({
-				status: 400,
-				message: "New Data is required for creation/update.",
-				res,
-			});
+			return {
+				error: {
+					status: 400,
+					message: "New Data is required for creation/update.",
+				},
+			};
 		const collection = db.collection(collectionName);
 		const dataToInsert: DataToInsert = {
 			...newData,
@@ -83,7 +82,7 @@ const setOperation = async (args: SetOperationArgs) => {
 					},
 					securityRules
 				);
-				if (!isAccessAllowed) return INSUFFICIENT_PERMISSIONS(res);
+				if (!isAccessAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 
 				const filters = isObjectId ? { _id: new ObjectId(id) } : { _id: id };
 				let response;
@@ -94,17 +93,19 @@ const setOperation = async (args: SetOperationArgs) => {
 				} else response = await collection.replaceOne(filters, dataToInsert);
 
 				if (!response.acknowledged || !response.modifiedCount)
-					return errorResponse({
-						status: 500,
-						message: "Document could not be updated.",
-						res,
-					});
-				return res.status(200).json(response);
+					return {
+						error: {
+							status: 500,
+							message: "Document could not be updated.",
+						},
+					};
+				return { error: null, response, status: 200 };
 			}
 		}
 
 		// Check for security rules before insertion
 		dataToInsert._id = id || new ObjectId().toString();
+		dataToInsert.id = dataToInsert._id;
 		const isInsertionAllowed = await isAllowedBySecurityRules(
 			{
 				req,
@@ -116,20 +117,21 @@ const setOperation = async (args: SetOperationArgs) => {
 			},
 			securityRules
 		);
-		if (!isInsertionAllowed) return INSUFFICIENT_PERMISSIONS(res);
+		if (!isInsertionAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 		const response = await collection.insertOne(
 			dataToInsert as OptionalId<Document>
 		);
 		if (!response.acknowledged)
-			return errorResponse({
-				status: 500,
-				message: "Document could not be created/set.",
-				res,
-			});
-		return res.status(201).json(response);
+			return {
+				error: {
+					status: 500,
+					message: "Document could not be created/set.",
+				},
+			};
+		return { error: null, response, status: 201 };
 	} catch (error: any) {
 		const errorStatus = error instanceof MongoServerError ? 400 : 500;
-		return errorResponse({ status: errorStatus, message: error.message, res });
+		return { error: { status: errorStatus, message: error.message } };
 	}
 };
 

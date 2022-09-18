@@ -1,9 +1,8 @@
-import type { Response, Request } from "express";
+import type { Request } from "express";
 import type { Db as MongoDBDatabaseInstance } from "mongodb";
 import type { SecurityRules } from "../types/securityRules";
 
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
-import errorResponse from "../utils/error";
 import { INSUFFICIENT_PERMISSIONS } from "../utils/errorConstants";
 
 interface ListOperationArgs {
@@ -12,7 +11,6 @@ interface ListOperationArgs {
 	db: MongoDBDatabaseInstance;
 	limit: number;
 	offset: number;
-	res: Response;
 	req: Request;
 	securityRules?: SecurityRules;
 }
@@ -22,7 +20,6 @@ const listOperation = async (args: ListOperationArgs) => {
 		collectionName,
 		filters,
 		db,
-		res,
 		req,
 		limit = 100,
 		offset = 0,
@@ -38,16 +35,16 @@ const listOperation = async (args: ListOperationArgs) => {
 			},
 			securityRules
 		);
-		if (!isListOpAllowed) return INSUFFICIENT_PERMISSIONS(res);
+		if (!isListOpAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 		const collection = db.collection(collectionName);
 		const documents = await collection
 			.find(filters || {})
 			.limit(limit)
 			.skip(offset)
 			.toArray();
-		return res.status(200).json({ documents });
+		return { error: null, documents };
 	} catch (err: any) {
-		return errorResponse({ status: 500, message: err.message, res });
+		return { error: { status: 500, message: err.message } };
 	}
 };
 

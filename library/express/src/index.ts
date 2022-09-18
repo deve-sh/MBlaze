@@ -5,11 +5,11 @@ import type MiddlewareBody from "./types/MiddlewareBody";
 import type { SecurityRules } from "./types/securityRules";
 
 // Operations
-import deleteOperation from "./operations/delete";
-import getOperation from "./operations/get";
-import listOperation from "./operations/list";
-import setOperation from "./operations/set";
-import updateOperation from "./operations/update";
+import get from "./controllers/get";
+import list from "./controllers/list";
+import deleteController from "./controllers/delete";
+import update from "./controllers/update";
+import set from "./controllers/set";
 
 // Response creators
 import errorResponse from "./utils/error";
@@ -54,9 +54,9 @@ const mongodbRouteHandler = (
 			});
 
 		if (operation === "get")
-			return getOperation({ collectionName, id, db, res, req, securityRules });
+			return get({ collectionName, id, db, res, req, securityRules });
 		if (operation === "list")
-			return listOperation({
+			return list({
 				collectionName,
 				filters: filters || {},
 				limit,
@@ -67,7 +67,7 @@ const mongodbRouteHandler = (
 				securityRules,
 			});
 		if (operation === "set")
-			return setOperation({
+			return set({
 				collectionName,
 				id: id || "",
 				db,
@@ -78,7 +78,7 @@ const mongodbRouteHandler = (
 				securityRules,
 			});
 		if (operation === "update")
-			return updateOperation({
+			return update({
 				collectionName,
 				id: id || "",
 				db,
@@ -88,7 +88,7 @@ const mongodbRouteHandler = (
 				req,
 			});
 		if (operation === "delete")
-			return deleteOperation({
+			return deleteController({
 				collectionName,
 				id: id || "",
 				db,

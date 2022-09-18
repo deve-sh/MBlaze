@@ -1,8 +1,9 @@
-import type { Request, Response } from "express";
+import type { Request } from "express";
 import {
 	Db as MongoDBDatabaseInstance,
 	MongoServerError,
 	ObjectId,
+	UpdateResult,
 } from "mongodb";
 import deepMerge from "deepmerge";
 import { unflatten } from "flat";
@@ -10,7 +11,6 @@ import { unflatten } from "flat";
 import type { SecurityRules } from "../types/securityRules";
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 
-import errorResponse from "../utils/error";
 import {
 	DOCUMENT_NOT_FOUND,
 	INSUFFICIENT_PERMISSIONS,
@@ -22,7 +22,6 @@ interface UpdateOperationArgs {
 	db: MongoDBDatabaseInstance;
 	id?: string;
 	newData?: Record<string, any>;
-	res: Response;
 	req: Request;
 	securityRules?: SecurityRules;
 }
@@ -32,14 +31,15 @@ interface DataToUpdate extends Record<string, any> {
 }
 
 const updateOperation = async (args: UpdateOperationArgs) => {
-	const { collectionName, db, id, res, newData, securityRules, req } = args;
+	const { collectionName, db, id, newData, securityRules, req } = args;
 	try {
 		if (!newData)
-			return errorResponse({
-				status: 400,
-				message: "New Data is required for updation.",
-				res,
-			});
+			return {
+				error: {
+					status: 400,
+					message: "New Data is required for updation.",
+				},
+			};
 
 		const collection = db.collection(collectionName);
 		const dataToUpdate: DataToUpdate = {
@@ -49,11 +49,12 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 
 		let docExists: any = false;
 		if (!id)
-			return errorResponse({
-				status: 400,
-				message: "Document ID is required for update operation.",
-				res,
-			});
+			return {
+				error: {
+					status: 400,
+					message: "Document ID is required for update operation.",
+				},
+			};
 
 		docExists = await findById(collectionName, id, db);
 
@@ -74,7 +75,7 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 				},
 				securityRules
 			);
-			if (!isUpdationAllowed) return INSUFFICIENT_PERMISSIONS(res);
+			if (!isUpdationAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 
 			const isObjectId = ObjectId.isValid(id);
 
@@ -83,16 +84,17 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 				{ $set: dataToUpdate }
 			);
 			if (!response.acknowledged || !response.modifiedCount)
-				return errorResponse({
-					status: 500,
-					message: "Document could not be updated.",
-					res,
-				});
-			return res.status(200).json(response);
-		} else return DOCUMENT_NOT_FOUND(res);
+				return {
+					error: {
+						status: 500,
+						message: "Document could not be updated.",
+					},
+				};
+			return { error: null, response };
+		} else return { error: DOCUMENT_NOT_FOUND() };
 	} catch (error: any) {
 		const errorStatus = error instanceof MongoServerError ? 400 : 500;
-		return errorResponse({ status: errorStatus, message: error.message, res });
+		return { error: { status: errorStatus, message: error.message } };
 	}
 };
 
