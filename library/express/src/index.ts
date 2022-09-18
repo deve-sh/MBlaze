@@ -39,7 +39,7 @@ const mongodbRouteHandler = (
 				return errorResponse({
 					status: 400,
 					message:
-						"Transaction support hasn\t been turned on. Please pass DB Connection arg to enable it.",
+						"Transaction support hasn't been turned on. Please pass DB Connection arg to enable it.",
 					res,
 				});
 

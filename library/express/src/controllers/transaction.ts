@@ -19,7 +19,11 @@ interface TransactionControllerArgs {
 
 const transaction = async (args: TransactionControllerArgs) => {
 	const { operations, connection, req, res, db, securityRules } = args;
-	const transactionOptions = {};
+	const transactionOptions = {
+		readPreference: "primary",
+		readConcern: { level: "local" },
+		writeConcern: { w: "majority" },
+	};
 
 	const opsPromises = [];
 
@@ -31,6 +35,7 @@ const transaction = async (args: TransactionControllerArgs) => {
 		});
 
 	const session = connection.startSession();
+	// @ts-ignore - MongoDB, please improve your documentation if type definitions are out of date.
 	session.startTransaction(transactionOptions);
 
 	try {
@@ -83,7 +88,7 @@ const transaction = async (args: TransactionControllerArgs) => {
 			.status(200)
 			.json({ message: "Operations successfully completed." });
 	} catch (error: any) {
-		session.abortTransaction();
+		await session.abortTransaction();
 		return errorResponse({
 			status: 500,
 			message: error.message || "Transaction Failed, please try again later.",
