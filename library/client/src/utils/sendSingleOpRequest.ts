@@ -13,7 +13,8 @@ interface OpRequesterArgs {
 	merge?: boolean;
 }
 
-interface errorTypes {
+interface opReturnType {
+	response: Record<string, any> | null;
 	error: Record<string, any> | null;
 	errorResponse?: Record<string, any>;
 	errorMessage?: string;
@@ -22,21 +23,27 @@ interface errorTypes {
 	noResponse?: boolean;
 }
 
-const handleError = (error: any): errorTypes => {
+const handleError = (error: any): opReturnType => {
 	if (error.response) {
 		const errorResponse = error.response.data;
 		const errorStatus = error.response.status;
 		const errorMessage = errorResponse.message;
 
-		return { error, errorResponse, errorStatus, errorMessage };
+		return { response: null, error, errorResponse, errorStatus, errorMessage };
 	} else if (error.request) {
 		return {
+			response: null,
 			error,
 			noResponse: true,
 			errorMessage: "No response was received from the database",
 		};
 	} else {
-		return { error, appLevelError: true, errorMessage: error.message };
+		return {
+			response: null,
+			error,
+			appLevelError: true,
+			errorMessage: error.message,
+		};
 	}
 };
 
@@ -64,10 +71,6 @@ const handleResponse = ({
 		};
 	return { error: null, response: {} };
 };
-
-interface opReturnType extends errorTypes {
-	response?: Record<string, any> | null;
-}
 
 const sendSingleOpRequest = async (
 	args: OpRequesterArgs

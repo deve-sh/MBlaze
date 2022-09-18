@@ -1,6 +1,10 @@
-class Doc {
+import FetchedDoc from "./FetchedDoc";
+import sendSingleOpRequest from "../utils/sendSingleOpRequest";
+
+class DocRef {
 	public collectionName: string;
 	public id: string;
+	public deleted: boolean = false;
 
 	constructor(collectionName: string, docId: string) {
 		if (!collectionName)
@@ -13,13 +17,49 @@ class Doc {
 		this.id = docId;
 	}
 
-	get() {}
+	async get() {
+		const result = await sendSingleOpRequest({
+			operation: "get",
+			id: this.id,
+			collectionName: this.collectionName,
+		});
+		if (result.error) throw new Error(result.errorMessage);
+		return new FetchedDoc(
+			this.collectionName,
+			this.id,
+			result.response?.data || null
+		);
+	}
 
-	set() {}
+	async set(newData: Record<string, any>, merge: boolean) {
+		const result = await sendSingleOpRequest({
+			operation: "set",
+			id: this.id,
+			collectionName: this.collectionName,
+			newData,
+			merge,
+		});
+		if (result.error) throw new Error(result.errorMessage);
+	}
 
-	update() {}
+	async update(updates: Record<string, any>) {
+		const result = await sendSingleOpRequest({
+			operation: "update",
+			id: this.id,
+			collectionName: this.collectionName,
+			newData: updates,
+		});
+		if (result.error) throw new Error(result.errorMessage);
+	}
 
-	delete() {}
+	async delete() {
+		const result = await sendSingleOpRequest({
+			operation: "delete",
+			id: this.id,
+			collectionName: this.collectionName,
+		});
+		if (result.error) throw new Error(result.errorMessage);
+	}
 }
 
-export default Doc;
+export default DocRef;
