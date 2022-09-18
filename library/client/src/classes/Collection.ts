@@ -1,5 +1,7 @@
 import comparatorType from "../types/comparator";
+import sendSingleOpRequest from "../utils/sendSingleOpRequest";
 import DocRef from "./DocRef";
+import FetchedCollection from "./FetchedCollection";
 
 class Collection {
 	private collectionName: string;
@@ -21,7 +23,20 @@ class Collection {
 		return new DocRef(this.collectionName, this.docId);
 	}
 
-	get() {}
+	limit(number: number) {}
+
+	async get() {
+		const result = await sendSingleOpRequest({
+			operation: "list",
+			filters: {},
+			collectionName: this.collectionName,
+		});
+		if (result.error) throw new Error(result.errorMessage);
+		return new FetchedCollection(
+			this.collectionName,
+			result.response?.docs || []
+		);
+	}
 }
 
 export default Collection;
