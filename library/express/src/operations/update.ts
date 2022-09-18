@@ -1,5 +1,5 @@
 import type { Request } from "express";
-import { Db, MongoServerError } from "mongodb";
+import { ClientSession, Db, MongoServerError } from "mongodb";
 import deepMerge from "deepmerge";
 import { unflatten } from "flat";
 
@@ -20,6 +20,7 @@ interface UpdateOperationArgs {
 	newData?: Record<string, any>;
 	req: Request;
 	securityRules?: SecurityRules;
+	session?: ClientSession;
 }
 
 interface DataToUpdate extends Record<string, any> {
@@ -27,7 +28,7 @@ interface DataToUpdate extends Record<string, any> {
 }
 
 const updateOperation = async (args: UpdateOperationArgs) => {
-	const { collectionName, db, id, newData, securityRules, req } = args;
+	const { collectionName, db, id, newData, securityRules, req, session } = args;
 	try {
 		if (!newData)
 			return {
@@ -52,7 +53,7 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 				},
 			};
 
-		docExists = await findById(collectionName, id, db);
+		docExists = await findById(collectionName, id, db, session);
 
 		if (docExists) {
 			// Check for access to update
@@ -78,7 +79,8 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 
 			const response = await collection.updateOne(
 				{ _id: getAppropriateId(id) },
-				{ $set: dataToUpdate }
+				{ $set: dataToUpdate },
+				{ session }
 			);
 			if (!response.acknowledged || !response.modifiedCount)
 				return {

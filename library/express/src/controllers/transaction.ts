@@ -44,7 +44,7 @@ const transaction = async (args: TransactionControllerArgs) => {
 							db,
 							securityRules,
 							id: operationObject.id || "",
-
+							session,
 							...operationObject,
 						})
 					);
@@ -54,6 +54,7 @@ const transaction = async (args: TransactionControllerArgs) => {
 							req,
 							db,
 							securityRules,
+							session,
 							...operationObject,
 						})
 					);
@@ -64,6 +65,7 @@ const transaction = async (args: TransactionControllerArgs) => {
 							db,
 							securityRules,
 							merge: operationObject.merge || false,
+							session,
 							...operationObject,
 						})
 					);
