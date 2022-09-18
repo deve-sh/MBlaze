@@ -66,7 +66,7 @@ describe("Update Operation Tests", () => {
 		});
 		await routeHandler(req, res, next);
 
-		// Now delete the created data
+		// Now update the created data
 		req = generateRequest({
 			collectionName: "projects",
 			operation: "update",

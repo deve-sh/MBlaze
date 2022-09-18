@@ -1,11 +1,17 @@
 import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
-import type { Request } from "express";
+import type { Request, Response, NextFunction } from "express";
+import type { Db } from "mongodb";
 import isAllowedBySecurityRules, {
 	SecurityRulesCheckerArgs,
 } from "../src/securityRules/isAllowedBySecurityRules";
 import { SecurityRulesDeciderFunctionArgs } from "../src/types/securityRules";
+import { connect, disconnect } from "./utils/mongodb";
+import { res, generateRequest, next } from "./__mocks__/express";
+import mongodbRouteHandler from "../src";
 
 describe("Test suite for security rules", () => {
+	afterAll(disconnect);
+
 	it("should be a function", () => {
 		expect(isAllowedBySecurityRules).toBeInstanceOf(Function);
 	});
@@ -259,5 +265,58 @@ describe("Test suite for security rules", () => {
 		expect(
 			await isAllowedBySecurityRules(createOperation, mockSecurityRules)
 		).toBe(false);
+	});
+
+	it("correct values should be passed for update operation in security rule decider function", async () => {
+		let passedNewResource, passedResource;
+
+		const mockSecurityRules = {
+			read: true,
+			write: ({ newResource, resource }) => {
+				passedResource = resource;
+				passedNewResource = newResource;
+				return (
+					// Allow first create operation to go through
+					newResource.nestedField.a === 1 ||
+					// Block the update operation from going through
+					newResource.nestedField.c.d === 5
+				);
+			},
+		};
+
+		const { db } = await connect();
+		const routeHandler = mongodbRouteHandler(db, mockSecurityRules);
+
+		let req = generateRequest({
+			collectionName: "projects",
+			operation: "set",
+			id: "project1",
+			newData: { field: "value", nestedField: { a: 1 } },
+		});
+		await routeHandler(req, res, next);
+
+		// Now try to update the created data
+		req = generateRequest({
+			collectionName: "projects",
+			operation: "update",
+			id: "project1",
+			newData: {
+				field: "updated_value",
+				"nestedField.a": 2,
+				"nestedField.b": 3,
+				"nestedField.c.d": 4,
+			},
+		});
+		const responseReceived = await routeHandler(req, res, next);
+
+		expect(responseReceived.status).toBe(401);
+		expect(passedNewResource.nestedField.c.d).toEqual(4);
+		expect(passedNewResource.nestedField.a).toEqual(
+			req.body.newData["nestedField.a"]
+		);
+		expect(passedNewResource.nestedField.a).toEqual(
+			req.body.newData["nestedField.a"]
+		);
+		expect(passedNewResource.field).toEqual(req.body.newData.field);
 	});
 });
