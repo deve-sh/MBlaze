@@ -5,7 +5,7 @@ class Collection {
 	private collectionName: string;
 	private docId?: string = undefined;
 
-	constructor(backendEndpoint: string, collectionName: string) {
+	constructor(collectionName: string) {
 		if (!collectionName)
 			throw new Error(
 				"Collection Name not provided at instantiation: Collection"

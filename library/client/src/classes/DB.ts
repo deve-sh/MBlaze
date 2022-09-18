@@ -9,13 +9,14 @@ class DB {
 			throw new Error("Backend Endpoint not provided at instantiation: DB");
 
 		this.backendEndpoint = backendEndpoint;
-		((global || globalThis || window) as any).mBlazeBackendendpoint =
-			backendEndpoint;
+		if (typeof window === "undefined")
+			(global as any).mBlazeBackendendpoint = backendEndpoint;
+		else (window as any).mBlazeBackendendpoint = backendEndpoint;
 	}
 
 	public collection(collectionName: string) {
 		if (!collectionName) throw new Error("Collection Name not provided.");
-		return new Collection(this.backendEndpoint, collectionName);
+		return new Collection(collectionName);
 	}
 
 	public doc(collectionPlusDocId: string) {
