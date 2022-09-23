@@ -1,17 +1,16 @@
 import Collection from "./Collection";
 import DocRef from "./DocRef";
+import setBackendEndpoint from "../utils/setBackendEndpoint";
+import type RequestCommonConfig from "../types/RequestCommonConfig";
+import setRequestConfig from "../utils/setRequestConfig";
 
 class DB {
-	private backendEndpoint: string;
-
-	constructor(backendEndpoint: string) {
+	constructor(backendEndpoint: string, requestConfig: RequestCommonConfig) {
 		if (!backendEndpoint)
 			throw new Error("Backend Endpoint not provided at instantiation: DB");
 
-		this.backendEndpoint = backendEndpoint;
-		if (typeof window === "undefined")
-			(global as any).mBlazeBackendendpoint = backendEndpoint;
-		else (window as any).mBlazeBackendendpoint = backendEndpoint;
+		setBackendEndpoint(backendEndpoint);
+		setRequestConfig(requestConfig || { headers: {} });
 	}
 
 	public collection(collectionName: string) {
