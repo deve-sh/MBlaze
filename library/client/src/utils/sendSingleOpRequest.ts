@@ -1,17 +1,10 @@
 import axios from "axios";
-import operations from "../types/operations";
-import getBackendEndpoint from "./getBackendEndpoint";
 
-interface OpRequesterArgs {
-	operation: operations;
-	collectionName: string;
-	id?: string;
-	filters?: Record<string, any> | null;
-	newData?: Record<string, any> | null;
-	limit?: number;
-	offset?: number;
-	merge?: boolean;
-}
+import type OpRequesterArgs from "../types/OpRequesterArgs";
+import type { RequestConfig } from "../types/RequestCommonConfig";
+
+import getBackendEndpoint from "./getBackendEndpoint";
+import getRequestConfig from "./getRequestConfig";
 
 interface opReturnType {
 	response: Record<string, any> | null;
@@ -88,7 +81,11 @@ const sendSingleOpRequest = async (
 			requestBody.merge = merge;
 		}
 
-		const { data } = await axios.post(backendEndpoint, requestBody);
+		const { headers = {} } = getRequestConfig(args) as RequestConfig;
+
+		const { data } = await axios.post(backendEndpoint, requestBody, {
+			headers,
+		});
 		return handleResponse({ operation, data, id, collectionName });
 	} catch (error: any) {
 		return handleError(error);
