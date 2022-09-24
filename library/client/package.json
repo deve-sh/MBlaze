@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"compile": "tsc",
-		"bundle": "browserify ./dist/main.js -o ./dist/index.js",
+		"bundle": "browserify ./dist/main.js --outfile ./dist/index.js --standalone mblaze",
 		"prepub": "node ./scripts/prepublish.js",
 		"pub": "cd dist & npm publish"
 	},
