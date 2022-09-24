@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"compile": "tsc",
+		"bundle": "browserify ./dist/main.js -o ./dist/index.js",
 		"prepub": "node ./scripts/prepublish.js",
 		"pub": "cd dist & npm publish"
 	},
@@ -12,6 +13,7 @@
 		"mongodb"
 	],
 	"devDependencies": {
+		"browserify": "^17.0.0",
 		"typescript": "^4.8.3"
 	},
 	"author": "Devesh Kumar",
