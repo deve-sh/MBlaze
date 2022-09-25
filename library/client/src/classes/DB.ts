@@ -5,7 +5,7 @@ import type RequestCommonConfig from "../types/RequestCommonConfig";
 import setRequestConfig from "../utils/setRequestConfig";
 
 class DB {
-	constructor(backendEndpoint: string, requestConfig: RequestCommonConfig) {
+	constructor(backendEndpoint: string, requestConfig?: RequestCommonConfig) {
 		if (!backendEndpoint)
 			throw new Error("Backend Endpoint not provided at instantiation: DB");
 
