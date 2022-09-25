@@ -18,7 +18,7 @@ class FetchedDoc {
 	}
 
 	data() {
-		return this.docData;
+		return this.docData ? { ...this.docData, id: this.id } : null;
 	}
 
 	get exists() {

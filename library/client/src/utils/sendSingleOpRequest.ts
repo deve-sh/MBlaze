@@ -69,7 +69,16 @@ const handleResponse = ({
 const sendSingleOpRequest = async (
 	args: OpRequesterArgs
 ): Promise<opReturnType> => {
-	const { operation, newData, id, collectionName, merge } = args;
+	const {
+		operation,
+		newData,
+		filters,
+		limit,
+		offset,
+		id,
+		collectionName,
+		merge,
+	} = args;
 	try {
 		const backendEndpoint = getBackendEndpoint();
 		if (!backendEndpoint)
@@ -80,6 +89,9 @@ const sendSingleOpRequest = async (
 			collectionName,
 			id,
 			operation,
+			filters,
+			limit,
+			offset,
 		};
 		if (["update", "set"].includes(operation)) {
 			requestBody.newData = newData;

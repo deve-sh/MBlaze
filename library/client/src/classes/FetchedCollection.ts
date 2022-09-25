@@ -13,9 +13,9 @@ class FetchedCollection {
 			);
 
 		this.collectionName = collectionName;
-		this.empty = !!docs.length;
+		this.empty = !docs.length;
 		this.docs = docs.map(
-			({ data, id, collectionName }) => new FetchedDoc(collectionName, id, data)
+			(data) => new FetchedDoc(collectionName, data.id || data._id, data)
 		);
 		this.forEach = function (callback) {
 			for (let i = 0; i < docs.length; i++) {
