@@ -1,14 +1,14 @@
-name: Run Tests On Express Middleware Library
+name: Run Tests On JS Client Library
 
 on:
   push:
     paths:
-      - "library/express/**"
-      - ".github/workflows/run-tests-on-express-middleware-lib.yaml"
+      - "library/client/**"
+      - ".github/workflows/run-tests-on-client-library.yaml"
 
 jobs:
   deploy:
-    name: Run Tests On Express Middleware Library
+    name: Run Tests On JS Client Library
     runs-on: ubuntu-latest
     env:
       RUN_TESTS: ${{ secrets.RUN_TESTS }}
@@ -26,6 +26,6 @@ jobs:
       - name: Run Tests
         if: ${{ env.RUN_TESTS == 'true' }}
         run: |
-          cd ./library/express
+          cd ./library/client
           npm install
           npm run test
