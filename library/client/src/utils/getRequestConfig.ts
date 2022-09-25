@@ -1,7 +1,9 @@
 import type OpRequesterArgs from "../types/OpRequesterArgs";
-import type RequestCommonConfig from "../types/RequestCommonConfig";
+import RequestCommonConfig, {
+	RequestConfig,
+} from "../types/RequestCommonConfig";
 
-const getRequestConfig = (args: OpRequesterArgs): RequestCommonConfig => {
+const getRequestConfig = (args: OpRequesterArgs): RequestConfig => {
 	let requestCommonConfig;
 	if (typeof window === "undefined")
 		requestCommonConfig = (global as any)
@@ -12,10 +14,10 @@ const getRequestConfig = (args: OpRequesterArgs): RequestCommonConfig => {
 
 	if (typeof requestCommonConfig === "function") {
 		const config = requestCommonConfig(args);
-		return config;
+		return config as RequestConfig;
 	}
 
-	return requestCommonConfig;
+	return requestCommonConfig as RequestConfig;
 };
 
 export default getRequestConfig;

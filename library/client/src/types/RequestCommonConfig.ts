@@ -1,7 +1,7 @@
 import type OpRequesterArgs from "./OpRequesterArgs";
 
 export type RequestConfig = {
-	headers?: {};
+	headers?: Record<string, any>;
 };
 
 type RequestCommonConfig =
