@@ -21,7 +21,7 @@ class FetchedDoc {
 		return this.docData;
 	}
 
-	exists() {
+	get exists() {
 		return !!this.docData;
 	}
 }
