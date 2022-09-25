@@ -1,5 +1,6 @@
 import CollectionClassConstructorArg from "../../types/collectionClassConstructorArg";
 import comparatorType from "../../types/comparator";
+import comparatorMap from "../../utils/comparatorMaps";
 
 import BaseCollection from "./BaseCollectionRef";
 import LimitedCollectionRef from "./LimitedCollectionRef";
@@ -13,7 +14,7 @@ class WhereCollectionRef extends BaseCollection {
 	}
 
 	where(fieldName: string, comparator: comparatorType, value: any) {
-		const conditionFragment = { [fieldName]: { comparator, value } };
+		const conditionFragment = { [fieldName]: comparatorMap(comparator, value) };
 		if (!this._filters["$and"]) {
 			this._filters.$and = [conditionFragment];
 		} else this._filters.$and.push(conditionFragment);
