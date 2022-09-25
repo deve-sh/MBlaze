@@ -1,6 +1,6 @@
 {
-	"name": "mblaze",
-	"version": "0.0.1",
+	"name": "mblaze.client",
+	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
