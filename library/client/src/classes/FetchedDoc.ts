@@ -3,8 +3,8 @@ import DocRef from "./DocRef";
 class FetchedDoc {
 	public collectionName: string;
 	public id: string;
-	public docData: Record<string, any> | null;
 	public ref: DocRef;
+	private docData: Record<string, any> | null;
 
 	constructor(
 		collectionName: string,
