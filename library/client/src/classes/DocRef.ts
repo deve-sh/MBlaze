@@ -23,11 +23,12 @@ class DocRef {
 			id: this.id,
 			collectionName: this.collectionName,
 		});
-		if (result.error) throw new Error(result.errorMessage);
+		if (result.error && result.errorStatus !== 404)
+			throw new Error(result.errorMessage);
 		return new FetchedDoc(
 			this.collectionName,
 			this.id,
-			result.response?.data || null
+			result.errorStatus === 404 ? null : result.response?.data || null
 		);
 	}
 
