@@ -20,7 +20,8 @@ const handleError = (error: any): opReturnType => {
 	if (error.response) {
 		const errorResponse = error.response.data;
 		const errorStatus = error.response.status;
-		const errorMessage = errorResponse.message;
+		const errorMessage =
+			errorResponse?.message || "No Response message from backend.";
 
 		return { response: null, error, errorResponse, errorStatus, errorMessage };
 	} else if (error.request) {
@@ -75,7 +76,11 @@ const sendSingleOpRequest = async (
 			throw new Error(
 				"Backend endpoint not specified, please specify backend endpoint first using new MBlaze.DB(<backendEndpoint>)"
 			);
-		const requestBody: Record<string, any> = {};
+		const requestBody: Record<string, any> = {
+			collectionName,
+			id,
+			operation,
+		};
 		if (["update", "set"].includes(operation)) {
 			requestBody.newData = newData;
 			requestBody.merge = merge;
