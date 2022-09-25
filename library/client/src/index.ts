@@ -1,5 +1,5 @@
 import DB from "./classes/DB";
-import CollectionRef from "./classes/Collection";
+import CollectionRef from "./classes/CollectionClasses/Collection";
 import DocRef from "./classes/DocRef";
 
 export default DB;

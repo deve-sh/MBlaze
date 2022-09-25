@@ -1,4 +1,4 @@
-import Collection from "./Collection";
+import Collection from "./CollectionClasses/Collection";
 import DocRef from "./DocRef";
 import setBackendEndpoint from "../utils/setBackendEndpoint";
 import type RequestCommonConfig from "../types/RequestCommonConfig";
@@ -15,7 +15,7 @@ class DB {
 
 	public collection(collectionName: string) {
 		if (!collectionName) throw new Error("Collection Name not provided.");
-		return new Collection(collectionName);
+		return new Collection({ collectionName });
 	}
 
 	public doc(collectionPlusDocId: string) {
