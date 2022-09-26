@@ -7,7 +7,7 @@ class BaseCollection {
 	_filters: Record<string, any> = {};
 	_limit: number = 100;
 	_offset: number = 0;
-	_sortOrder: string = "asc";
+	_sortOrder: "asc" | "desc" = "asc";
 	_sortByField: string | undefined | null = null;
 
 	constructor({
@@ -37,6 +37,8 @@ class BaseCollection {
 			collectionName: this.collectionName,
 			limit: this._limit,
 			offset: this._offset,
+			sortBy: this._sortByField || undefined,
+			sortOrder: this._sortOrder,
 		});
 	}
 }

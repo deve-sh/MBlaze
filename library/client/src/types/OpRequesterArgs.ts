@@ -9,6 +9,8 @@ interface OpRequesterArgs {
 	limit?: number;
 	offset?: number;
 	merge?: boolean;
+	sortBy?: string;
+	sortOrder?: "asc" | "desc";
 }
 
 export default OpRequesterArgs;

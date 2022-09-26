@@ -78,6 +78,8 @@ const sendSingleOpRequest = async (
 		id,
 		collectionName,
 		merge,
+		sortOrder,
+		sortBy,
 	} = args;
 	try {
 		const backendEndpoint = getBackendEndpoint();
@@ -93,6 +95,10 @@ const sendSingleOpRequest = async (
 			limit,
 			offset,
 		};
+		if (sortBy) {
+			requestBody.sortBy = sortBy;
+			requestBody.sortOrder = sortOrder;
+		}
 		if (["update", "set"].includes(operation)) {
 			requestBody.newData = newData;
 			requestBody.merge = merge;
