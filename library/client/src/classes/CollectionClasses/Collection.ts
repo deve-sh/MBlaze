@@ -2,11 +2,14 @@ import CollectionClassConstructorArg from "../../types/collectionClassConstructo
 import comparatorType from "../../types/comparator";
 import comparatorMap from "../../utils/comparatorMaps";
 
-import BaseCollection from "./BaseCollectionRef";
 import DocRef from "../DocRef";
+
+import BaseCollection from "./BaseCollectionRef";
+import WhereCollectionRef from "./WhereCollectionRef";
+import FilteredCollectionRef from "./FilteredCollectionRef";
 import LimitedCollectionRef from "./LimitedCollectionRef";
 import OffsetCollectionRef from "./OffsetCollectionRef";
-import WhereCollectionRef from "./WhereCollectionRef";
+import OrderedCollectionRef from "./OrderedCollectionRef";
 
 class Collection extends BaseCollection {
 	private _args: CollectionClassConstructorArg;
@@ -23,6 +26,10 @@ class Collection extends BaseCollection {
 		return new WhereCollectionRef({ ...this._args, filters: this._filters });
 	}
 
+	filter(filters: Record<string, any>) {
+		return new FilteredCollectionRef({ ...this._args, filters: filters });
+	}
+
 	doc(docId: string) {
 		return new DocRef(this.collectionName, docId);
 	}
@@ -33,6 +40,14 @@ class Collection extends BaseCollection {
 
 	offset(number: number) {
 		return new OffsetCollectionRef({ ...this._args, offset: number });
+	}
+
+	orderBy(field: string, sortOrder: "asc" | "desc" = "asc") {
+		return new OrderedCollectionRef({
+			...this._args,
+			sortByField: field,
+			sortOrder,
+		});
 	}
 }
 
