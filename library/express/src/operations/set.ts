@@ -112,23 +112,25 @@ const setOperation = async (args: SetOperationArgs) => {
 			}
 		}
 
-		// Check for security rules before insertion
 		dataToInsert._id = id || new ObjectId().toString();
-		dataToInsert.id = dataToInsert._id.toString();
+		// Check for security rules before insertion
 		const isInsertionAllowed = await isAllowedBySecurityRules(
 			{
 				req,
 				resource: null,
 				newResource: unflatten(dataToInsert) as Partial<Object>,
 				collection: collectionName,
-				id: dataToInsert._id,
+				id: dataToInsert._id.toString(),
 				operation: "create",
 			},
 			securityRules
 		);
 		if (!isInsertionAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
 		const response = await collection.insertOne(
-			dataToInsert as OptionalId<Document>,
+			{
+				...dataToInsert,
+				id: dataToInsert._id.toString(),
+			} as OptionalId<Document>,
 			{ session }
 		);
 		if (!response.acknowledged)
