@@ -4,6 +4,8 @@ JavaScript library to connect to your express app's MongoDB driver.
 
 #### Before Getting Started
 
+[Get to know a little about the project](../../README.md).
+
 Make sure you have the express middleware library installed and setup on your Express app using the [steps here](../express/README.md).
 
 ### Setup and Usage
@@ -17,8 +19,8 @@ yarn add mblaze.client
 ```javascript
 import DB from "mblaze.client";
 
-const { BACKEND_MONGODB_ROUTE } = process.env;
-const db = new DB(BACKEND_MONGODB_ROUTE); // This is your global mblaze instance
+const { BACKEND_MONGODB_ENDPOINT } = process.env;
+const db = new DB(BACKEND_MONGODB_ENDPOINT); // This is your global mblaze instance
 ```
 
 ---
@@ -142,5 +144,37 @@ await docRef.delete();
 
 nonExistentDocRef.delete().catch((err) => {
 	console.log(err.message);
+});
+```
+
+### Adding custom headers to requests
+
+You would obviously want some level of control and most of the times it will be based on cookies or tokens sent via headers.
+
+At the time of initialization:
+
+```javascript
+const db = new DB(BACKEND_MONGODB_ENDPOINT, {
+	headers: {
+		Authorization: token,
+	},
+});
+
+// or
+
+const db = new DB(BACKEND_MONGODB_ENDPOINT, ({
+	operation,
+	collectionName,
+	id,
+	filters,
+	newData,
+	limit,
+	offset,
+	merge,
+	sortBy,
+	sortOrder
+}) => {
+	// Compute your headers based on the information.
+	return { headers: ... }
 });
 ```

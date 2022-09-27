@@ -13,6 +13,7 @@ A simple library aiming to make working with MongoDB from the frontend simple an
 - Granular to the core Security Rules
 - Advanced Filtering Mechanisms for Read Operations (Those fulltext-search problems are a thing of the past)
 - Client Library that mimics the syntax of [Firestore's Client SDK](https://github.com/firebase/firebase-js-sdk).
+- Both Backend and Client libraries fully typed.
 
 ### Good to Have
 

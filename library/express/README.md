@@ -2,6 +2,8 @@
 
 This package is a middleware supposed to be used in Tandem with Client Side MBlaze SDKs, together, they are supposed to make MongoDB-based development much more like Firestore.
 
+[Get to know a little about the project](../../README.md).
+
 <p align="center"><img src="https://raw.githubusercontent.com/deve-sh/MBlaze/main/docs/Express%20Middleware%20Usage.png" style="max-width: 75%;" /></p>
 
 Sets up a single route (A lot like a GraphQL server) on your server, usually at `/mongodb` responsible for handling calls from the client SDK for CRUD operations.
