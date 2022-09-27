@@ -4,9 +4,9 @@ JavaScript library to connect to your express app's MongoDB driver.
 
 #### Before Getting Started
 
-[Get to know a little about the project](../../README.md).
+[Get to know a little about the project](https://github.com/deve-sh/MBlaze#readme).
 
-Make sure you have the express middleware library installed and setup on your Express app using the [steps here](../express/README.md).
+Make sure you have the express middleware library installed and setup on your Express app using the [steps here](npmjs.com/package/mblaze.express).
 
 ### Setup and Usage
 
@@ -185,7 +185,7 @@ const db = new DB(BACKEND_MONGODB_ENDPOINT, ({
 
 ### Transactions
 
-As long as your [backend MongoDB setup supports Transactions](../express/README.md#transactions), you can run them using the `db.runTransaction` method.
+As long as your [backend MongoDB setup supports Transactions](https://github.com/deve-sh/MBlaze/tree/main/library/express#transactions), you can run them using the `db.runTransaction` method.
 
 > **Only write operations are supported for transactions. Read operations are not atomic/guaranteed because the first time the backend is informed of a transaction, it's when `transaction.save` is called.**
 
