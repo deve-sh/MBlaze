@@ -1,3 +1,4 @@
+import ObjectId from "bson-objectid";
 import FetchedDoc from "./FetchedDoc";
 import sendSingleOpRequest from "../utils/sendSingleOpRequest";
 
@@ -6,15 +7,12 @@ class DocRef {
 	public id: string;
 	public deleted: boolean = false;
 
-	constructor(collectionName: string, docId: string) {
+	constructor(collectionName: string, docId?: string) {
 		if (!collectionName)
 			throw new Error("Collection Name not provided at instantiation: Doc");
 
-		if (!docId)
-			throw new Error("Document ID not provided at instantiation: Doc");
-
 		this.collectionName = collectionName;
-		this.id = docId;
+		this.id = docId || new ObjectId().id.toString();
 	}
 
 	async get() {

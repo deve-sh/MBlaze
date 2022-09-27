@@ -30,7 +30,7 @@ class Collection extends BaseCollection {
 		return new FilteredCollectionRef({ ...this._args, filters: filters });
 	}
 
-	doc(docId: string) {
+	doc(docId?: string) {
 		return new DocRef(this.collectionName, docId);
 	}
 
