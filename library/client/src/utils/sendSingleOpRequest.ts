@@ -6,7 +6,7 @@ import type { RequestConfig } from "../types/RequestCommonConfig";
 import getBackendEndpoint from "./getBackendEndpoint";
 import getRequestConfig from "./getRequestConfig";
 
-interface opReturnType {
+export interface opReturnType {
 	response: Record<string, any> | null;
 	error: Record<string, any> | null;
 	errorResponse?: Record<string, any>;
