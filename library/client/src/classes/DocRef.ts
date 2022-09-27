@@ -30,7 +30,7 @@ class DocRef {
 		);
 	}
 
-	async set(newData: Record<string, any>, merge: boolean) {
+	async set(newData: Record<string, any>, { merge }: { merge: boolean }) {
 		const result = await sendSingleOpRequest({
 			operation: "set",
 			id: this.id,
