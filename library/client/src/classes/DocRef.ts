@@ -1,5 +1,4 @@
-import ObjectId from "bson-objectid";
-
+import { ObjectID } from "bson";
 import {
 	docDeleteRequest,
 	docGetRequest,
@@ -16,7 +15,7 @@ class DocRef {
 			throw new Error("Collection Name not provided at instantiation: Doc");
 
 		this.collectionName = collectionName;
-		this.id = docId || new ObjectId().id.toString();
+		this.id = docId || new ObjectID().toString();
 	}
 
 	async get() {
