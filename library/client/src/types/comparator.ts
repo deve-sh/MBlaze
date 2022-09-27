@@ -2,6 +2,8 @@ type comparatorType =
 	| "=="
 	| "!="
 	| ">="
+	| ">"
+	| "<"
 	| "<="
 	| "in"
 	| "not-in"

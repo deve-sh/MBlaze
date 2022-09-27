@@ -1,8 +1,9 @@
 {
 	"name": "mblaze.client",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"description": "",
 	"main": "index.js",
+	"repository": "https://github.com/deve-sh/mblaze/tree/main/library/client",
 	"scripts": {
 		"compile": "tsc",
 		"bundle": "browserify ./dist/main.js --outfile ./dist/index.js --standalone mblaze",

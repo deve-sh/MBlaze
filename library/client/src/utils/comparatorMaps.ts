@@ -8,6 +8,8 @@ const comparatorMap = (
 	if (comparator === "!=") return { $ne: value };
 	if (comparator === "<=") return { $lte: value };
 	if (comparator === ">=") return { $gte: value };
+	if (comparator === "<") return { $lt: value };
+	if (comparator === ">") return { $gt: value };
 	if (comparator === "array-contains") return value; // MongoDB auto checks { field: value } for array membership.
 	if (comparator === "array-contains-any")
 		return { $elemMatch: comparatorMap("in", value) };
