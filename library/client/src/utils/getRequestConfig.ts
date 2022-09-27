@@ -3,7 +3,9 @@ import RequestCommonConfig, {
 	RequestConfig,
 } from "../types/RequestCommonConfig";
 
-const getRequestConfig = (args: OpRequesterArgs): RequestConfig => {
+const getRequestConfig = (
+	args: OpRequesterArgs | Array<OpRequesterArgs>
+): RequestConfig => {
 	let requestCommonConfig;
 	if (typeof window === "undefined")
 		requestCommonConfig = (global as any)

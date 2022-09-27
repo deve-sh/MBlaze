@@ -1,9 +1,12 @@
 import DocRef from "../classes/DocRef";
 import FetchedDoc from "../classes/FetchedDoc";
 
-import sendSingleOpRequest from "../utils/sendSingleOpRequest";
+import { sendSingleOpRequest } from "../utils/sendOpRequest";
 import MBlazeException from "../utils/mblazeError";
 import OpRequesterArgs from "../types/OpRequesterArgs";
+
+// Wherever operationsList is being used, we add the operation to an array as it is being used in a Transaction.
+// In a transaction we batch the op requests into a collection request payload and send it to the backend.
 
 export const docGetRequest = async (docRef: DocRef) => {
 	const result = await sendSingleOpRequest({

@@ -1,6 +1,6 @@
 import FetchedCollection from "../classes/FetchedCollection";
 import MBlazeException from "../utils/mblazeError";
-import sendSingleOpRequest from "../utils/sendSingleOpRequest";
+import { sendSingleOpRequest } from "../utils/sendOpRequest";
 
 interface CollectionGetRequestArg {
 	collectionName: string;

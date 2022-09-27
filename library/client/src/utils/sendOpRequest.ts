@@ -66,7 +66,7 @@ const handleResponse = ({
 	return { error: null, response: {} };
 };
 
-const sendSingleOpRequest = async (
+export const sendSingleOpRequest = async (
 	args: OpRequesterArgs
 ): Promise<opReturnType> => {
 	const {
@@ -115,4 +115,24 @@ const sendSingleOpRequest = async (
 	}
 };
 
-export default sendSingleOpRequest;
+export const sendTransactionRequest = async (
+	args: Array<OpRequesterArgs>
+): Promise<opReturnType> => {
+	try {
+		const backendEndpoint = getBackendEndpoint();
+		if (!backendEndpoint)
+			throw new Error(
+				"Backend endpoint not specified, please specify backend endpoint first using new MBlaze.DB(<backendEndpoint>)"
+			);
+		const requestBody: Array<Record<string, any>> = args;
+
+		const { headers = {} } = getRequestConfig(args) as RequestConfig;
+
+		const { data } = await axios.post(backendEndpoint, requestBody, {
+			headers,
+		});
+		return data;
+	} catch (error: any) {
+		return handleError(error);
+	}
+};
