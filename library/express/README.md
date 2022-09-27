@@ -2,7 +2,7 @@
 
 This package is a middleware supposed to be used in Tandem with Client Side MBlaze SDKs, together, they are supposed to make MongoDB-based development much more like Firestore.
 
-[Get to know a little about the project](../../README.md).
+[Get to know a little about the project](https://github.com/deve-sh/MBlaze#readme).
 
 <p align="center"><img src="https://raw.githubusercontent.com/deve-sh/MBlaze/main/docs/Express%20Middleware%20Usage.png" style="max-width: 75%;" /></p>
 
@@ -35,7 +35,7 @@ new MongoClient(process.env.MONGODB_URI).connect((err, client) => {
 });
 ```
 
-Once the Express middleware setup is done, start your server and go to the client, follow the [steps here](../client/README.md) to connect your client app to the MongoDB op handler.
+Once the Express middleware setup is done, start your server and go to the client, follow the [steps here](https://github.com/deve-sh/MBlaze/tree/main/library/client#readme) to connect your client app to the MongoDB op handler.
 
 ### API Route Documentation
 
