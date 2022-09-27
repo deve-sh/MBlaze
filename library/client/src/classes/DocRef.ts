@@ -1,6 +1,7 @@
 import ObjectId from "bson-objectid";
 import FetchedDoc from "./FetchedDoc";
 import sendSingleOpRequest from "../utils/sendSingleOpRequest";
+import MBlazeException from "../utils/mblazeError";
 
 class DocRef {
 	public collectionName: string;
@@ -22,7 +23,11 @@ class DocRef {
 			collectionName: this.collectionName,
 		});
 		if (result.error && result.errorStatus !== 404)
-			throw new Error(result.errorMessage);
+			throw new MBlazeException(
+				result.errorMessage || result.error.message,
+				result.errorStatus,
+				result.errorResponse
+			);
 		return new FetchedDoc(
 			this.collectionName,
 			this.id,
@@ -38,7 +43,12 @@ class DocRef {
 			newData,
 			merge,
 		});
-		if (result.error) throw new Error(result.errorMessage);
+		if (result.error)
+			throw new MBlazeException(
+				result.errorMessage || result.error.message,
+				result.errorStatus,
+				result.errorResponse
+			);
 	}
 
 	async update(updates: Record<string, any>) {
@@ -48,7 +58,12 @@ class DocRef {
 			collectionName: this.collectionName,
 			newData: updates,
 		});
-		if (result.error) throw new Error(result.errorMessage);
+		if (result.error)
+			throw new MBlazeException(
+				result.errorMessage || result.error.message,
+				result.errorStatus,
+				result.errorResponse
+			);
 	}
 
 	async delete() {
@@ -57,7 +72,12 @@ class DocRef {
 			id: this.id,
 			collectionName: this.collectionName,
 		});
-		if (result.error) throw new Error(result.errorMessage);
+		if (result.error)
+			throw new MBlazeException(
+				result.errorMessage || result.error.message,
+				result.errorStatus,
+				result.errorResponse
+			);
 	}
 }
 

@@ -1,4 +1,5 @@
 import FetchedCollection from "../classes/FetchedCollection";
+import MBlazeException from "../utils/mblazeError";
 import sendSingleOpRequest from "../utils/sendSingleOpRequest";
 
 interface CollectionGetRequestArg {
@@ -27,7 +28,12 @@ const collectionGetRequest = async ({
 		sortBy,
 		sortOrder,
 	});
-	if (result.error) throw new Error(result.errorMessage);
+	if (result.error)
+		throw new MBlazeException(
+			result.errorMessage || result.error.message,
+			result.errorStatus,
+			result.errorResponse
+		);
 	return new FetchedCollection(collectionName, result.response?.docs || []);
 };
 
