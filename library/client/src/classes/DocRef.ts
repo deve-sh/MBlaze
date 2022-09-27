@@ -10,7 +10,6 @@ import {
 class DocRef {
 	public collectionName: string;
 	public id: string;
-	public deleted: boolean = false;
 
 	constructor(collectionName: string, docId?: string) {
 		if (!collectionName)
