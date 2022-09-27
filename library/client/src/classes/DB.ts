@@ -3,6 +3,8 @@ import DocRef from "./DocRef";
 import setBackendEndpoint from "../utils/setBackendEndpoint";
 import type RequestCommonConfig from "../types/RequestCommonConfig";
 import setRequestConfig from "../utils/setRequestConfig";
+import type TransactionCallback from "../types/TransactionCallback";
+import Transaction from "./Transaction";
 
 class DB {
 	constructor(backendEndpoint: string, requestConfig?: RequestCommonConfig) {
@@ -28,6 +30,11 @@ class DB {
 			throw new Error("Document ID not provided.");
 		const [collectionName, docId] = collectionPlusDocId.split("/");
 		return new DocRef(collectionName, docId);
+	}
+
+	public runTransaction(callback: TransactionCallback) {
+		const transaction = new Transaction();
+		return callback(transaction);
 	}
 }
 

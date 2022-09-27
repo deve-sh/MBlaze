@@ -6,6 +6,6 @@ export type RequestConfig = {
 
 type RequestCommonConfig =
 	| RequestConfig
-	| ((args: OpRequesterArgs) => RequestConfig);
+	| ((args: OpRequesterArgs | Array<OpRequesterArgs>) => RequestConfig);
 
 export default RequestCommonConfig;

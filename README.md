@@ -17,7 +17,9 @@ A simple library aiming to make working with MongoDB from the frontend simple an
 
 ### Good to Have
 
-- FireStore like ArrayUnion, ArrayRemove, serverTimestamp and delete ops.
+Some good features that Firestore's SDK supports that can find their way into MBlaze:
+
+- FireStore like ArrayUnion, ArrayRemove, Atomic increment, serverTimestamp data types and field delete op.
 - Any other features Firestore's SDK might have that isn't supported by MBlaze.
 
 If you would like to contribute on any of the above, feel free to fork the repo and raise a Pull Request for your feature.

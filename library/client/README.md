@@ -180,3 +180,21 @@ const db = new DB(BACKEND_MONGODB_ENDPOINT, ({
 	return { headers: ... }
 });
 ```
+
+---
+
+### Transactions
+
+As long as your [backend MongoDB setup supports Transactions](../express/README.md#transactions), you can run them using the `db.runTransaction` method.
+
+> **Only write operations are supported for transactions. Read operations are not atomic/guaranteed because the first time the backend is informed of a transaction, it's when `transaction.save` is called.**
+
+```javascript
+db.runTransaction((transaction) => {
+	transaction.update(docRef, { newField: "value" });
+	transaction.delete(docToDeleteRef);
+	transaction.set(docToCreateRef, { newDoc: "newValue" });
+
+	transaction.save(); // Mandatory, otherwise the transaction is never registered.
+});
+```
