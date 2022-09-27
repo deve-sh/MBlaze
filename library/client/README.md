@@ -132,6 +132,7 @@ await docRef.update({ field: updatedValue });
 
 nonExistentDocRef.update({ field: updatedValue }).catch((err) => {
 	console.log(err.message);
+	console.log(err.statusCode);
 });
 ```
 
@@ -144,6 +145,7 @@ await docRef.delete();
 
 nonExistentDocRef.delete().catch((err) => {
 	console.log(err.message);
+	console.log(err.statusCode);
 });
 ```
 
