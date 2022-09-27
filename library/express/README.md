@@ -6,7 +6,34 @@ This package is a middleware supposed to be used in Tandem with Client Side MBla
 
 Sets up a single route (A lot like a GraphQL server) on your server, usually at `/mongodb` responsible for handling calls from the client SDK for CRUD operations.
 
-**Note**: There is a peer dependency of `mongodb`, so make sure you have version >=4.9.0 installed in your express project before using the middleware.
+**Note**: There is a peer dependency of `mongodb`, so make sure you have version `>=4.9.0` installed in your express project before using the middleware.
+
+### Setting Up and Usage
+
+```bash
+npm i --save mblaze.express mongodb
+
+# or
+
+yarn add mblaze.express mongodb
+```
+
+```javascript
+const { default: mongodbRouteHandler } = require("mblaze.express");
+// or
+import mongodbRouteHandler from "mblaze.express";
+
+const { MongoClient } = require("mongodb");
+
+new MongoClient(process.env.MONGODB_URI).connect((err, client) => {
+	if (err) throw err;
+	const db = client.db(process.env.MONGODB_DBNAME);
+	// or whatever route you need the op handler on.
+	app.use("/mongodb", mongodbRouteHandler(db));
+});
+```
+
+Once the Express middleware setup is done, start your server and go to the client, follow the [steps here](../client/README.md) to connect your client app to the MongoDB op handler.
 
 ### API Route Documentation
 
