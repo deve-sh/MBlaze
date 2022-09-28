@@ -39,6 +39,7 @@ const modifyObjectForReservedFieldTypes = (
 						...increment(key, obj[key].by),
 					};
 				else rootObj[INCREMENT_OP_CODE] = increment(key, obj[key].by);
+				delete obj[key];
 			} else if (
 				obj[key]?.type === ARRAY_UNION_TYPE &&
 				considerTypes.includes(ARRAY_UNION_TYPE)
@@ -46,9 +47,10 @@ const modifyObjectForReservedFieldTypes = (
 				if (rootObj[ARRAY_UNION_OP_CODE])
 					rootObj[ARRAY_UNION_OP_CODE] = {
 						...rootObj[ARRAY_UNION_OP_CODE],
-						...arrayUnion(key, obj[key].toAdd),
+						...arrayUnion(key, obj[key].toInsert),
 					};
-				else rootObj[ARRAY_UNION_OP_CODE] = arrayUnion(key, obj[key].toAdd);
+				else rootObj[ARRAY_UNION_OP_CODE] = arrayUnion(key, obj[key].toInsert);
+				delete obj[key];
 			} else if (
 				obj[key]?.type === ARRAY_REMOVE_TYPE &&
 				considerTypes.includes(ARRAY_REMOVE_TYPE)
@@ -60,8 +62,11 @@ const modifyObjectForReservedFieldTypes = (
 					};
 				else
 					rootObj[ARRAY_REMOVE_OP_CODE] = arrayRemove(key, obj[key].toRemove);
-			} else if (obj[key] && typeof obj[key] === "object")
+				delete obj[key];
+			} else if (obj[key] && typeof obj[key] === "object") {
 				modifyObjectForReservedFieldTypes(obj[key], considerTypes, rootObj);
+				if (!Object.keys(obj[key]).length) delete obj[key];
+			}
 		}
 	}
 
