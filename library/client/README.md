@@ -198,3 +198,21 @@ db.runTransaction((transaction) => {
 	transaction.save(); // Mandatory, otherwise the transaction is never registered.
 });
 ```
+
+### Field Values
+
+MBlaze Client SDK supports Firestore-like Field Value operations.
+
+```javascript
+import { FieldValue } from "mblaze.client";
+
+db.collection("projects")
+	.doc("project1")
+	.update({
+		timestamp: FieldValue.serverTimestamp(),
+		arrayField: FieldValue.arrayUnion(15),
+		arrayFieldToBeRemovedFrom: FieldValue.arrayRemove(5),
+		nVisits: FieldValue.increment(10),
+		fieldToDelete: FieldValue.delete(),
+	});
+```
