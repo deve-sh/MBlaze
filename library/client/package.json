@@ -10,7 +10,7 @@
 		"prepub": "node ./scripts/prepublish.js",
 		"test": "jest ./tests",
 		"test:coverage": "npm run test --coverage",
-		"pub": "cd dist & npm publish"
+		"pub": "npm run test && cd dist && npm publish"
 	},
 	"keywords": [
 		"mongodb"
