@@ -42,11 +42,33 @@ describe("Reserved Type Tests", () => {
 						field: FieldValue.arrayUnion(15),
 						field1: FieldValue.serverTimestamp(),
 						nestedField: {
-							createdAt: FieldValue.arrayRemove(5),
+							arrayToRemoveFrom: FieldValue.arrayRemove(5),
 						},
 					})
 				).length
 			).toEqual(3);
+		});
+
+		it("should handle nesting of reserved fields properly", () => {
+			const nestedOps = modifyObjectForReservedFieldTypes({
+				regularField: FieldValue.arrayUnion(20),
+				nestedField: {
+					a: {
+						b: {
+							c: FieldValue.increment(5),
+						},
+					},
+				},
+				nestedField1: {
+					arrayToRemoveFrom: FieldValue.arrayRemove(5),
+				},
+			});
+			console.log(nestedOps);
+			expect(
+				nestedOps[ARRAY_REMOVE_OP_CODE]["nestedField1.arrayToRemoveFrom"]
+			).toEqual(5);
+			expect(nestedOps[ARRAY_UNION_OP_CODE]["regularField"]).toEqual(20);
+			expect(nestedOps[INCREMENT_OP_CODE]["nestedField.a.b.c"]).toEqual(5);
 		});
 
 		it("should handle multiple similar ops", () => {

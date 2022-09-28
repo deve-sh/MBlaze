@@ -18,12 +18,14 @@ const modifyObjectForReservedFieldTypes = (
 		ARRAY_REMOVE_TYPE,
 		ARRAY_UNION_TYPE,
 	],
-	rootObj?: Record<string, any>
+	rootObj?: Record<string, any>,
+	currentKey?: string
 ) => {
 	if (!rootObj) rootObj = obj;
 
 	for (let key in obj) {
 		if (obj.hasOwnProperty(key)) {
+			const currentKeyChain = currentKey ? `${currentKey}.${key}` : key;
 			if (
 				obj[key]?.type === SERVER_TIMESTAMP_TYPE &&
 				considerTypes.includes(SERVER_TIMESTAMP_TYPE)
@@ -36,9 +38,10 @@ const modifyObjectForReservedFieldTypes = (
 				if (rootObj[INCREMENT_OP_CODE])
 					rootObj[INCREMENT_OP_CODE] = {
 						...rootObj[INCREMENT_OP_CODE],
-						...increment(key, obj[key].by),
+						...increment(currentKeyChain, obj[key].by),
 					};
-				else rootObj[INCREMENT_OP_CODE] = increment(key, obj[key].by);
+				else
+					rootObj[INCREMENT_OP_CODE] = increment(currentKeyChain, obj[key].by);
 				delete obj[key];
 			} else if (
 				obj[key]?.type === ARRAY_UNION_TYPE &&
@@ -47,9 +50,13 @@ const modifyObjectForReservedFieldTypes = (
 				if (rootObj[ARRAY_UNION_OP_CODE])
 					rootObj[ARRAY_UNION_OP_CODE] = {
 						...rootObj[ARRAY_UNION_OP_CODE],
-						...arrayUnion(key, obj[key].toInsert),
+						...arrayUnion(currentKeyChain, obj[key].toInsert),
 					};
-				else rootObj[ARRAY_UNION_OP_CODE] = arrayUnion(key, obj[key].toInsert);
+				else
+					rootObj[ARRAY_UNION_OP_CODE] = arrayUnion(
+						currentKeyChain,
+						obj[key].toInsert
+					);
 				delete obj[key];
 			} else if (
 				obj[key]?.type === ARRAY_REMOVE_TYPE &&
@@ -58,13 +65,21 @@ const modifyObjectForReservedFieldTypes = (
 				if (rootObj[ARRAY_REMOVE_OP_CODE])
 					rootObj[ARRAY_REMOVE_OP_CODE] = {
 						...rootObj[ARRAY_REMOVE_OP_CODE],
-						...arrayRemove(key, obj[key].toRemove),
+						...arrayRemove(currentKeyChain, obj[key].toRemove),
 					};
 				else
-					rootObj[ARRAY_REMOVE_OP_CODE] = arrayRemove(key, obj[key].toRemove);
+					rootObj[ARRAY_REMOVE_OP_CODE] = arrayRemove(
+						currentKeyChain,
+						obj[key].toRemove
+					);
 				delete obj[key];
 			} else if (obj[key] && typeof obj[key] === "object") {
-				modifyObjectForReservedFieldTypes(obj[key], considerTypes, rootObj);
+				modifyObjectForReservedFieldTypes(
+					obj[key],
+					considerTypes,
+					rootObj,
+					currentKeyChain
+				);
 				if (!Object.keys(obj[key]).length) delete obj[key];
 			}
 		}
