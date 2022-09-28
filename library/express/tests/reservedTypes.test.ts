@@ -5,6 +5,7 @@ import modifyObjectForReservedFieldTypes from "../src/reservedFieldTypes/modifyO
 import { ARRAY_UNION_OP_CODE } from "../src/reservedFieldTypes/arrayUnion";
 import { INCREMENT_OP_CODE } from "../src/reservedFieldTypes/increment";
 import { ARRAY_REMOVE_OP_CODE } from "../src/reservedFieldTypes/arrayRemove";
+import { FIELD_DELETE_OP_CODE } from "../src/reservedFieldTypes/fieldDelete";
 
 describe("Reserved Type Tests", () => {
 	describe("modifyObjectForReservedTypes tests", () => {
@@ -20,6 +21,12 @@ describe("Reserved Type Tests", () => {
 					ARRAY_UNION_OP_CODE
 				].field
 			).toBe(15);
+
+			expect(
+				modifyObjectForReservedFieldTypes({ field: FieldValue.delete() })[
+					FIELD_DELETE_OP_CODE
+				].field
+			).toBe("");
 
 			expect(
 				modifyObjectForReservedFieldTypes({ field: FieldValue.arrayRemove(5) })[
@@ -62,13 +69,18 @@ describe("Reserved Type Tests", () => {
 				nestedField1: {
 					arrayToRemoveFrom: FieldValue.arrayRemove(5),
 				},
+				fieldToDeleteCompletely: {
+					nested: { field: FieldValue.delete() },
+				},
 			});
-			console.log(nestedOps);
 			expect(
 				nestedOps[ARRAY_REMOVE_OP_CODE]["nestedField1.arrayToRemoveFrom"]
 			).toEqual(5);
 			expect(nestedOps[ARRAY_UNION_OP_CODE]["regularField"]).toEqual(20);
 			expect(nestedOps[INCREMENT_OP_CODE]["nestedField.a.b.c"]).toEqual(5);
+			expect(
+				nestedOps[FIELD_DELETE_OP_CODE]["fieldToDeleteCompletely.nested.field"]
+			).toEqual("");
 		});
 
 		it("should handle multiple similar ops", () => {

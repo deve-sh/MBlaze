@@ -32,7 +32,7 @@
 		"mongodb": "^4.9.1",
 		"ts-jest": "^29.0.0",
 		"typescript": "^4.8.3",
-		"mblaze.client": "^3.1.1"
+		"mblaze.client": "^3.1.2"
 	},
 	"peerDependencies": {
 		"mongodb": "^4.9.x"

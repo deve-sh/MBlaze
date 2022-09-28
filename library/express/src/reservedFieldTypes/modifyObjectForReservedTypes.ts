@@ -8,6 +8,10 @@ import arrayUnion, {
 	ARRAY_UNION_OP_CODE,
 	ARRAY_UNION_TYPE,
 } from "./arrayUnion";
+import fieldDelete, {
+	FIELD_DELETE_TYPE,
+	FIELD_DELETE_OP_CODE,
+} from "./fieldDelete";
 
 const modifyObjectForReservedFieldTypes = (
 	obj: Record<string, any>,
@@ -17,9 +21,11 @@ const modifyObjectForReservedFieldTypes = (
 		INCREMENT_TYPE,
 		ARRAY_REMOVE_TYPE,
 		ARRAY_UNION_TYPE,
+		FIELD_DELETE_TYPE,
 	],
 	rootObj?: Record<string, any>,
-	currentKey?: string
+	currentKey?: string,
+	deleteEmptyRemainderObjects = true
 ) => {
 	if (!rootObj) rootObj = obj;
 
@@ -73,6 +79,17 @@ const modifyObjectForReservedFieldTypes = (
 						obj[key].toRemove
 					);
 				delete obj[key];
+			} else if (
+				obj[key]?.type === FIELD_DELETE_TYPE &&
+				considerTypes.includes(FIELD_DELETE_TYPE)
+			) {
+				if (rootObj[FIELD_DELETE_OP_CODE])
+					rootObj[FIELD_DELETE_OP_CODE] = {
+						...rootObj[FIELD_DELETE_OP_CODE],
+						...fieldDelete(currentKeyChain),
+					};
+				else rootObj[FIELD_DELETE_OP_CODE] = fieldDelete(currentKeyChain);
+				delete obj[key];
 			} else if (obj[key] && typeof obj[key] === "object") {
 				modifyObjectForReservedFieldTypes(
 					obj[key],
@@ -80,7 +97,8 @@ const modifyObjectForReservedFieldTypes = (
 					rootObj,
 					currentKeyChain
 				);
-				if (!Object.keys(obj[key]).length) delete obj[key];
+				if (!Object.keys(obj[key]).length && deleteEmptyRemainderObjects)
+					delete obj[key];
 			}
 		}
 	}
