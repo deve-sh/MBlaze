@@ -123,6 +123,22 @@ describe("Reserved Type Tests", () => {
 			expect(
 				multipleIncrementOps[INCREMENT_OP_CODE]["nestedField.anotherArrayValue"]
 			).toEqual(10);
+
+			const multipleDeleteOps = modifyObjectForReservedFieldTypes({
+				regularValue: FieldValue.delete(),
+				"nestedField.arrayValue": FieldValue.delete(),
+				"nestedField.anotherArrayValue": FieldValue.delete(),
+			});
+
+			expect(multipleDeleteOps[FIELD_DELETE_OP_CODE]["regularValue"]).toEqual(
+				""
+			);
+			expect(
+				multipleDeleteOps[FIELD_DELETE_OP_CODE]["nestedField.arrayValue"]
+			).toEqual("");
+			expect(
+				multipleDeleteOps[FIELD_DELETE_OP_CODE]["nestedField.anotherArrayValue"]
+			).toEqual("");
 		});
 	});
 });
