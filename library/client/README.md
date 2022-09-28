@@ -6,7 +6,7 @@ JavaScript library to connect to your express app's MongoDB driver.
 
 [Get to know a little about the project](https://github.com/deve-sh/MBlaze#readme).
 
-Make sure you have the express middleware library installed and setup on your Express app using the [steps here](npmjs.com/package/mblaze.express).
+Make sure you have the express middleware library installed and setup on your Express app using the [steps here](https://npmjs.com/package/mblaze.express).
 
 ### Setup and Usage
 
