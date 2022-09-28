@@ -171,10 +171,3 @@ body: [
 
 The above operations will automatically be run as a transaction.
 All transaction operations are subject to the same security rules as regular operations.
-
----
-
-### Features Worth Looking Forward To
-
-- Atomic Array Operations (ArrayUnion and ArrayRemove)
-- Server Timestamps
