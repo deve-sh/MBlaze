@@ -10,9 +10,9 @@ import { sendTransactionRequest } from "../utils/sendOpRequest";
 import MBlazeException from "../utils/mblazeError";
 
 class Transaction {
-	private operationsList: Array<OpRequesterArgs>;
-	private saving: boolean;
-	private completed: boolean;
+	operationsList: Array<OpRequesterArgs>;
+	saving: boolean;
+	completed: boolean;
 	constructor() {
 		this.operationsList = [];
 		this.saving = false;
@@ -24,7 +24,7 @@ class Transaction {
 	}
 
 	private logCannotRunOpsError() {
-		return console.error("Transaction is processing or completed");
+		throw new Error("Transaction is processing or completed");
 	}
 
 	public get(ref: DocRef) {
@@ -40,10 +40,15 @@ class Transaction {
 	public set(
 		ref: DocRef,
 		newData: Record<string, any>,
-		{ merge = false }: { merge: boolean }
+		options?: { merge: boolean }
 	) {
 		if (!this.canRunOps()) return this.logCannotRunOpsError();
-		docSetRequest(ref, newData, { merge }, this.operationsList);
+		docSetRequest(
+			ref,
+			newData,
+			{ merge: options?.merge || false },
+			this.operationsList
+		);
 	}
 
 	public delete(ref: DocRef) {
