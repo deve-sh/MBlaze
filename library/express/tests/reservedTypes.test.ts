@@ -50,16 +50,44 @@ describe("Reserved Type Tests", () => {
 		});
 
 		it("should handle multiple similar ops", () => {
-			const multipleSimilarOps = modifyObjectForReservedFieldTypes({
+			const multipleArrayUnionOps = modifyObjectForReservedFieldTypes({
 				"nestedField.arrayValue": FieldValue.arrayUnion(15),
 				"nestedField.anotherArrayValue": FieldValue.arrayUnion(10),
 			});
 
 			expect(
-				multipleSimilarOps[ARRAY_UNION_OP_CODE]["nestedField.arrayValue"]
+				multipleArrayUnionOps[ARRAY_UNION_OP_CODE]["nestedField.arrayValue"]
 			).toEqual(15);
 			expect(
-				multipleSimilarOps[ARRAY_UNION_OP_CODE]["nestedField.anotherArrayValue"]
+				multipleArrayUnionOps[ARRAY_UNION_OP_CODE][
+					"nestedField.anotherArrayValue"
+				]
+			).toEqual(10);
+
+			const multipleArrayRemoveOps = modifyObjectForReservedFieldTypes({
+				"nestedField.arrayValue": FieldValue.arrayRemove(15),
+				"nestedField.anotherArrayValue": FieldValue.arrayRemove(10),
+			});
+
+			expect(
+				multipleArrayRemoveOps[ARRAY_REMOVE_OP_CODE]["nestedField.arrayValue"]
+			).toEqual(15);
+			expect(
+				multipleArrayRemoveOps[ARRAY_REMOVE_OP_CODE][
+					"nestedField.anotherArrayValue"
+				]
+			).toEqual(10);
+
+			const multipleIncrementOps = modifyObjectForReservedFieldTypes({
+				"nestedField.arrayValue": FieldValue.increment(15),
+				"nestedField.anotherArrayValue": FieldValue.increment(10),
+			});
+
+			expect(
+				multipleIncrementOps[INCREMENT_OP_CODE]["nestedField.arrayValue"]
+			).toEqual(15);
+			expect(
+				multipleIncrementOps[INCREMENT_OP_CODE]["nestedField.anotherArrayValue"]
 			).toEqual(10);
 		});
 	});
