@@ -6,6 +6,9 @@ import { unflatten } from "flat";
 import type { SecurityRules } from "../types/securityRules";
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 
+import modifyObjectForReservedFieldTypes from "../reservedFieldTypes/modifyObjectForReservedTypes";
+import getOpCodeBasedFieldsForUpdate from "../reservedFieldTypes/getOpCodeBasedFieldsForUpdate";
+
 import {
 	DOCUMENT_NOT_FOUND,
 	INSUFFICIENT_PERMISSIONS,
@@ -77,9 +80,12 @@ const updateOperation = async (args: UpdateOperationArgs) => {
 			delete dataToUpdate.id;
 			delete dataToUpdate._id;
 
+			const processedForReservedTypesData = modifyObjectForReservedFieldTypes(
+				JSON.parse(JSON.stringify(dataToUpdate))
+			);
 			const response = await collection.updateOne(
 				{ _id: getAppropriateId(id) },
-				{ $set: dataToUpdate },
+				getOpCodeBasedFieldsForUpdate(processedForReservedTypesData),
 				{ session }
 			);
 			if (!response.acknowledged || !response.modifiedCount)

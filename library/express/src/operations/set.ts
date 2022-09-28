@@ -13,8 +13,12 @@ import { unflatten } from "flat";
 
 import type { SecurityRules } from "../types/securityRules";
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
-
 import { INSUFFICIENT_PERMISSIONS } from "../utils/errorConstants";
+
+import { SERVER_TIMESTAMP_TYPE } from "../reservedFieldTypes/serverTimestamp";
+import modifyObjectForReservedFieldTypes from "../reservedFieldTypes/modifyObjectForReservedTypes";
+import getOpCodeBasedFieldsForUpdate from "../reservedFieldTypes/getOpCodeBasedFieldsForUpdate";
+
 import findById from "../utils/findById";
 import getAppropriateId from "../utils/getAppropriateId";
 
@@ -55,7 +59,7 @@ const setOperation = async (args: SetOperationArgs) => {
 				},
 			};
 		const collection = db.collection(collectionName);
-		const dataToInsert: DataToInsert = {
+		let dataToInsert: DataToInsert = {
 			...newData,
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -90,16 +94,23 @@ const setOperation = async (args: SetOperationArgs) => {
 				delete dataToInsert.id;
 				const filters = { _id: getAppropriateId(id) };
 				let response;
+
+				const processedForReservedTypesData = modifyObjectForReservedFieldTypes(
+					JSON.parse(JSON.stringify(dataToInsert))
+				);
+
 				if (merge) {
 					response = await collection.updateOne(
 						filters,
-						{ $set: dataToInsert },
+						getOpCodeBasedFieldsForUpdate(processedForReservedTypesData),
 						{ session }
 					);
 				} else
-					response = await collection.replaceOne(filters, dataToInsert, {
-						session,
-					});
+					response = await collection.replaceOne(
+						filters,
+						processedForReservedTypesData,
+						{ session }
+					);
 
 				if (!response.acknowledged || !response.modifiedCount)
 					return {
@@ -126,13 +137,18 @@ const setOperation = async (args: SetOperationArgs) => {
 			securityRules
 		);
 		if (!isInsertionAllowed) return { error: INSUFFICIENT_PERMISSIONS() };
-		const response = await collection.insertOne(
-			{
-				...dataToInsert,
-				id: dataToInsert._id.toString(),
-			} as OptionalId<Document>,
-			{ session }
+
+		dataToInsert = { ...dataToInsert, id: dataToInsert?._id?.toString() };
+		const processedForReservedTypesData = modifyObjectForReservedFieldTypes(
+			JSON.parse(JSON.stringify(dataToInsert)),
+			[SERVER_TIMESTAMP_TYPE], // Only server-timestamp allowed as a field op during create operation.
+			undefined,
+			"",
+			false
 		);
+		const response = await collection.insertOne(processedForReservedTypesData, {
+			session,
+		});
 		if (!response.acknowledged)
 			return {
 				error: {

@@ -1,6 +1,7 @@
 import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
 import { NextFunction, Request, Response } from "express";
 import { Db } from "mongodb";
+import { FieldValue } from "mblaze.client";
 import { connect, disconnect } from "./utils/mongodb";
 import mongodbRouteHandler from "../src";
 import { res, generateRequest, next } from "./__mocks__/express";
@@ -62,7 +63,13 @@ describe("Update Operation Tests", () => {
 			collectionName: "projects",
 			operation: "set",
 			id: "project1",
-			newData: { field: "value" },
+			newData: {
+				field: "value",
+				incrementMe: 1,
+				fieldToBeDeleted: "",
+				arrayField: [],
+				arrayToRemoveField: [10],
+			},
 		});
 		await routeHandler(req, res, next);
 
@@ -71,12 +78,38 @@ describe("Update Operation Tests", () => {
 			collectionName: "projects",
 			operation: "update",
 			id: "project1",
-			newData: { field: "updated_value" },
+			newData: {
+				field: "updated_value",
+				timestampField: FieldValue.serverTimestamp(),
+				incrementMe: FieldValue.increment(1),
+				fieldToBeDeleted: FieldValue.delete(),
+				arrayField: FieldValue.arrayUnion(5),
+				arrayToRemoveField: FieldValue.arrayRemove(10),
+				nestedField: { a: { b: { c: FieldValue.serverTimestamp() } } },
+			},
 		});
-		const responseReceived = await routeHandler(req, res, next);
+		let responseReceived = await routeHandler(req, res, next);
 		expect(responseReceived.status).toBe(200);
 		expect(responseReceived.acknowledged).toEqual(true);
 		expect(responseReceived.modifiedCount).toEqual(1);
+
+		// Now read the updated document
+		req = generateRequest({
+			collectionName: "projects",
+			operation: "get",
+			id: "project1",
+		});
+		responseReceived = await routeHandler(req, res, next);
+		expect(new Date(responseReceived.document.timestampField)).toBeInstanceOf(
+			Date
+		);
+		expect(
+			new Date(responseReceived.document.nestedField.a.b.c)
+		).toBeInstanceOf(Date);
+		expect(responseReceived.document.incrementMe).toBe(2);
+		expect(responseReceived.document.fieldToBeDeleted).toBeFalsy();
+		expect(responseReceived.document.arrayField.length).toBe(1);
+		expect(responseReceived.document.arrayToRemoveField.length).toBe(0);
 	});
 
 	it("should not update id of a document even if passed in newData", async () => {
