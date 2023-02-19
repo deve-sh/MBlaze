@@ -14,6 +14,7 @@ export interface opReturnType {
 	errorStatus?: number;
 	appLevelError?: boolean;
 	noResponse?: boolean;
+	errorRetryable?: boolean;
 }
 
 const handleError = (error: any): opReturnType => {
@@ -23,10 +24,18 @@ const handleError = (error: any): opReturnType => {
 		const errorMessage =
 			errorResponse?.message || "No Response message from backend.";
 
-		return { response: null, error, errorResponse, errorStatus, errorMessage };
+		return {
+			response: null,
+			error,
+			errorResponse,
+			errorStatus,
+			errorMessage,
+			errorRetryable: false,
+		};
 	} else if (error.request) {
 		return {
 			response: null,
+			errorRetryable: true,
 			error,
 			noResponse: true,
 			errorMessage: "No response was received from the database",
@@ -34,6 +43,7 @@ const handleError = (error: any): opReturnType => {
 	} else {
 		return {
 			response: null,
+			errorRetryable: true,
 			error,
 			appLevelError: true,
 			errorMessage: error.message,
@@ -67,7 +77,8 @@ const handleResponse = ({
 };
 
 export const sendSingleOpRequest = async (
-	args: OpRequesterArgs
+	args: OpRequesterArgs,
+	tryCount?: number
 ): Promise<opReturnType> => {
 	const {
 		operation,
@@ -81,12 +92,14 @@ export const sendSingleOpRequest = async (
 		sortOrder,
 		sortBy,
 	} = args;
+	tryCount = tryCount || 0;
+	const backendEndpoint = getBackendEndpoint();
+	if (!backendEndpoint)
+		throw new Error(
+			"Backend endpoint not specified, please specify backend endpoint first using new MBlaze.DB(<backendEndpoint>)"
+		);
+	const requestConfig = getRequestConfig(args) as RequestConfig;
 	try {
-		const backendEndpoint = getBackendEndpoint();
-		if (!backendEndpoint)
-			throw new Error(
-				"Backend endpoint not specified, please specify backend endpoint first using new MBlaze.DB(<backendEndpoint>)"
-			);
 		const requestBody: Record<string, any> = {
 			collectionName,
 			id,
@@ -111,13 +124,22 @@ export const sendSingleOpRequest = async (
 		});
 		return handleResponse({ operation, data, id, collectionName });
 	} catch (error: any) {
-		return handleError(error);
+		const errorHandled = handleError(error);
+
+		if (errorHandled.errorRetryable && requestConfig.fallbackURL && !tryCount) {
+			return sendSingleOpRequest(args, tryCount + 1);
+		}
+
+		return errorHandled;
 	}
 };
 
 export const sendTransactionRequest = async (
-	args: Array<OpRequesterArgs>
+	args: Array<OpRequesterArgs>,
+	tryCount?: number
 ): Promise<opReturnType> => {
+	tryCount = tryCount || 0;
+	const requestConfig = getRequestConfig(args) as RequestConfig;
 	try {
 		const backendEndpoint = getBackendEndpoint();
 		if (!backendEndpoint)
@@ -126,13 +148,19 @@ export const sendTransactionRequest = async (
 			);
 		const requestBody: Array<Record<string, any>> = args;
 
-		const { headers = {} } = getRequestConfig(args) as RequestConfig;
+		const { headers = {} } = requestConfig;
 
 		const { data } = await axios.post(backendEndpoint, requestBody, {
 			headers,
 		});
 		return data;
 	} catch (error: any) {
-		return handleError(error);
+		const errorHandled = handleError(error);
+
+		if (errorHandled.errorRetryable && requestConfig.fallbackURL && !tryCount) {
+			return sendTransactionRequest(args, tryCount + 1);
+		}
+
+		return errorHandled;
 	}
 };
