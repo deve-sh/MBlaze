@@ -11,7 +11,7 @@ jobs:
     name: Run Tests On JS Client Library
     runs-on: ubuntu-latest
     env:
-      RUN_TESTS: ${{ secrets.RUN_TESTS }}
+      RUN_TESTS: ${{ secrets.RUN_CLIENT_TESTS }}
 
     steps:
       - name: Checkout Files
