@@ -5,6 +5,7 @@ import comparatorMap from "../../utils/comparatorMaps";
 import BaseCollection from "./BaseCollectionRef";
 import LimitedCollectionRef from "./LimitedCollectionRef";
 import OffsetCollectionRef from "./OffsetCollectionRef";
+import OrderedCollectionRef from "./OrderedCollectionRef";
 
 class WhereCollectionRef extends BaseCollection {
 	private _args: CollectionClassConstructorArg;
@@ -34,6 +35,14 @@ class WhereCollectionRef extends BaseCollection {
 			...this._args,
 			offset: number,
 			filters: this._filters,
+		});
+	}
+
+	orderBy(field: string, sortOrder: "asc" | "desc" = "asc") {
+		return new OrderedCollectionRef({
+			...this._args,
+			sortByField: field,
+			sortOrder,
 		});
 	}
 }
