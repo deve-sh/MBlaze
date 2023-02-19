@@ -93,13 +93,15 @@ export const sendSingleOpRequest = async (
 		sortBy,
 	} = args;
 	tryCount = tryCount || 0;
-	const backendEndpoint = getBackendEndpoint();
-	if (!backendEndpoint)
-		throw new Error(
-			"Backend endpoint not specified, please specify backend endpoint first using new MBlaze.DB(<backendEndpoint>)"
-		);
 	const requestConfig = getRequestConfig(args) as RequestConfig;
 	try {
+		const backendEndpoint = tryCount
+			? requestConfig.fallbackURL
+			: getBackendEndpoint();
+		if (!backendEndpoint)
+			throw new Error(
+				"Backend endpoint not specified, please specify backend endpoint first using new MBlaze.DB(<backendEndpoint>)"
+			);
 		const requestBody: Record<string, any> = {
 			collectionName,
 			id,
@@ -127,6 +129,7 @@ export const sendSingleOpRequest = async (
 		const errorHandled = handleError(error);
 
 		if (errorHandled.errorRetryable && requestConfig.fallbackURL && !tryCount) {
+			console.log("Retrying request with:");
 			return sendSingleOpRequest(args, tryCount + 1);
 		}
 
@@ -141,7 +144,9 @@ export const sendTransactionRequest = async (
 	tryCount = tryCount || 0;
 	const requestConfig = getRequestConfig(args) as RequestConfig;
 	try {
-		const backendEndpoint = getBackendEndpoint();
+		const backendEndpoint = tryCount
+			? requestConfig.fallbackURL
+			: getBackendEndpoint();
 		if (!backendEndpoint)
 			throw new Error(
 				"Backend endpoint not specified, please specify backend endpoint first using new MBlaze.DB(<backendEndpoint>)"
