@@ -129,7 +129,6 @@ export const sendSingleOpRequest = async (
 		const errorHandled = handleError(error);
 
 		if (errorHandled.errorRetryable && requestConfig.fallbackURL && !tryCount) {
-			console.log("Retrying request with:");
 			return sendSingleOpRequest(args, tryCount + 1);
 		}
 
