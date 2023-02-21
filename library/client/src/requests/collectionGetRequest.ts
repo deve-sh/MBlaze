@@ -9,6 +9,7 @@ interface CollectionGetRequestArg {
 	offset?: number;
 	sortBy?: string;
 	sortOrder?: "asc" | "desc";
+	fieldsSelectionRule?: Record<string, boolean | number>;
 }
 
 const collectionGetRequest = async ({
@@ -18,6 +19,7 @@ const collectionGetRequest = async ({
 	offset = 0,
 	sortBy,
 	sortOrder = "asc",
+	fieldsSelectionRule,
 }: CollectionGetRequestArg) => {
 	const result = await sendSingleOpRequest({
 		operation: "list",
@@ -27,6 +29,7 @@ const collectionGetRequest = async ({
 		offset,
 		sortBy,
 		sortOrder,
+		fieldsSelectionRule,
 	});
 	if (result.error)
 		throw new MBlazeException(

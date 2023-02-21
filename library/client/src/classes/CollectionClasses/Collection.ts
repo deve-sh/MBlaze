@@ -10,6 +10,7 @@ import FilteredCollectionRef from "./FilteredCollectionRef";
 import LimitedCollectionRef from "./LimitedCollectionRef";
 import OffsetCollectionRef from "./OffsetCollectionRef";
 import OrderedCollectionRef from "./OrderedCollectionRef";
+import SelectFieldsFromCollectionRef from "./SelectFieldsFromCollectionRef";
 
 class Collection extends BaseCollection {
 	private _args: CollectionClassConstructorArg;
@@ -40,6 +41,13 @@ class Collection extends BaseCollection {
 
 	offset(number: number) {
 		return new OffsetCollectionRef({ ...this._args, offset: number });
+	}
+
+	select(rule: Record<string, boolean | number>) {
+		return new SelectFieldsFromCollectionRef({
+			...this._args,
+			fieldsSelectionRule: rule,
+		});
 	}
 
 	orderBy(field: string, sortOrder: "asc" | "desc" = "asc") {

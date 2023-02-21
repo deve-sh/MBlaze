@@ -91,6 +91,7 @@ export const sendSingleOpRequest = async (
 		merge,
 		sortOrder,
 		sortBy,
+		fieldsSelectionRule,
 	} = args;
 	tryCount = tryCount || 0;
 	const requestConfig = getRequestConfig(args) as RequestConfig;
@@ -110,6 +111,8 @@ export const sendSingleOpRequest = async (
 			limit,
 			offset,
 		};
+		if (fieldsSelectionRule && Object.keys(fieldsSelectionRule).length)
+			requestBody.fieldsSelectionRule = fieldsSelectionRule;
 		if (sortBy) {
 			requestBody.sortBy = sortBy;
 			requestBody.sortOrder = sortOrder;

@@ -5,4 +5,5 @@ export default interface CollectionClassConstructorArg {
 	offset?: number;
 	sortByField?: string;
 	sortOrder?: "asc" | "desc";
+	fieldsSelectionRule?: Record<string, boolean | number>;
 }

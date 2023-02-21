@@ -10,6 +10,7 @@ class BaseCollection {
 	_offset: number = 0;
 	_sortOrder: "asc" | "desc" = "asc";
 	_sortByField: string | undefined | null = null;
+	_fieldsSelectionRule: Record<string, boolean | number> = {};
 
 	constructor({
 		collectionName,
@@ -18,6 +19,7 @@ class BaseCollection {
 		filters = {},
 		sortByField,
 		sortOrder = "asc",
+		fieldsSelectionRule = {},
 	}: CollectionClassConstructorArg) {
 		if (!collectionName)
 			throw new Error(
@@ -30,6 +32,7 @@ class BaseCollection {
 		this._offset = offset;
 		this._sortByField = sortByField;
 		this._sortOrder = sortOrder;
+		this._fieldsSelectionRule = fieldsSelectionRule;
 	}
 
 	get() {

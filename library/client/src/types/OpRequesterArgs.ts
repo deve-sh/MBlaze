@@ -11,6 +11,7 @@ interface OpRequesterArgs {
 	merge?: boolean;
 	sortBy?: string;
 	sortOrder?: "asc" | "desc";
+	fieldsSelectionRule?: Record<string, boolean | number>;
 }
 
 export default OpRequesterArgs;
