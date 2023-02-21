@@ -79,6 +79,10 @@ const mongodbRouteHandler = (
 				res,
 			});
 
+		// Audit-Logging
+		if (process.env.MBLAZE_ENABLE_AUDIT_LOGS === "true")
+			console.log("MBlaze: " + operation, JSON.stringify(req.body));
+
 		if (operation === "get")
 			return get({ collectionName, id, db, res, req, securityRules });
 		if (operation === "list")
