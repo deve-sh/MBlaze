@@ -171,3 +171,13 @@ body: [
 
 The above operations will automatically be run as a transaction.
 All transaction operations are subject to the same security rules as regular operations.
+
+### Audit Logging
+
+In many cases you would want to log the operations coming in and out of MBlaze on the server (To forward those logs to a service like Google Cloud Logging for analytics and assessment), you can turn on audit logs in MBlaze by setting the following environment variable:
+
+```env
+MBLAZE_ENABLE_AUDIT_LOGS=true
+```
+
+Audit Logs from MBlaze contain the operation name and the request body.
