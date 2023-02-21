@@ -149,6 +149,20 @@ nonExistentDocRef.delete().catch((err) => {
 });
 ```
 
+### Counting Data
+
+```javascript
+const { count } = await db
+	.collection("projects")
+	.where(field, "==", value)
+	.count();
+
+const { count } = await db
+	.collection("projects")
+	.filters({ [field]: { $gte: value } })
+	.count();
+```
+
 ### Adding custom headers to requests
 
 You would obviously want some level of control and most of the times it will be based on cookies or tokens sent via headers.
