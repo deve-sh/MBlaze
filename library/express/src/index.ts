@@ -65,6 +65,7 @@ const mongodbRouteHandler = (
 			merge,
 			sortBy,
 			sortOrder = "asc",
+			fieldsSelectionRule = {},
 		} = req.body as RegularMiddlewareBody;
 
 		if (!collectionName)
@@ -98,6 +99,7 @@ const mongodbRouteHandler = (
 				securityRules,
 				sortBy,
 				sortOrder,
+				fieldsSelectionRule,
 			});
 		if (operation === "count")
 			return count({

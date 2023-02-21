@@ -17,6 +17,7 @@ interface ListControllerArgs {
 	securityRules?: SecurityRules;
 	sortBy?: string;
 	sortOrder: sortOrder;
+	fieldsSelectionRule?: Record<string, number | boolean>;
 }
 
 const list = async (args: ListControllerArgs) => {

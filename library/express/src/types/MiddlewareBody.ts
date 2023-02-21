@@ -15,6 +15,7 @@ export interface RegularMiddlewareBody {
 	merge?: boolean;
 	sortBy?: string;
 	sortOrder?: sortOrder;
+	fieldsSelectionRule?: Record<string, boolean | number>;
 }
 
 export interface TranscationMiddlewareBody {

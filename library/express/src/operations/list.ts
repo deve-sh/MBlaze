@@ -16,6 +16,7 @@ export interface ListOperationArgs {
 	securityRules?: SecurityRules;
 	sortBy?: string;
 	sortOrder: sortOrder;
+	fieldsSelectionRule?: Record<string, boolean | number>;
 }
 
 const listOperation = async (args: ListOperationArgs) => {
@@ -29,6 +30,7 @@ const listOperation = async (args: ListOperationArgs) => {
 		securityRules,
 		sortOrder,
 		sortBy,
+		fieldsSelectionRule,
 	} = args;
 	try {
 		const isListOpAllowed = await isAllowedBySecurityRules(
@@ -46,6 +48,8 @@ const listOperation = async (args: ListOperationArgs) => {
 			.find(filters || {})
 			.limit(limit)
 			.skip(offset);
+		if (fieldsSelectionRule && Object.keys(fieldsSelectionRule))
+			collectionFetchRef = collectionFetchRef.project(fieldsSelectionRule);
 		if (sortBy) collectionFetchRef = collectionFetchRef.sort(sortBy, sortOrder);
 		const documents = await collectionFetchRef.toArray();
 		return { error: null, documents };
