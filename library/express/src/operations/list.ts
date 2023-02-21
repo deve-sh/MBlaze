@@ -6,7 +6,7 @@ import type sortOrder from "../types/sortOrder";
 import isAllowedBySecurityRules from "../securityRules/isAllowedBySecurityRules";
 import { INSUFFICIENT_PERMISSIONS } from "../utils/errorConstants";
 
-interface ListOperationArgs {
+export interface ListOperationArgs {
 	collectionName: string;
 	filters: Record<string, any>;
 	db: MongoDBDatabaseInstance;

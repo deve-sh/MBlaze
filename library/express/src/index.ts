@@ -14,6 +14,7 @@ import list from "./controllers/list";
 import deleteController from "./controllers/delete";
 import update from "./controllers/update";
 import set from "./controllers/set";
+import count from "./controllers/count";
 
 // Response creators
 import errorResponse from "./utils/error";
@@ -87,6 +88,19 @@ const mongodbRouteHandler = (
 			return get({ collectionName, id, db, res, req, securityRules });
 		if (operation === "list")
 			return list({
+				collectionName,
+				filters: filters || {},
+				limit,
+				offset,
+				db,
+				res,
+				req,
+				securityRules,
+				sortBy,
+				sortOrder,
+			});
+		if (operation === "count")
+			return count({
 				collectionName,
 				filters: filters || {},
 				limit,
