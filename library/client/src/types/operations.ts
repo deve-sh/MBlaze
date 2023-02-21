@@ -1,3 +1,3 @@
-type operations = "get" | "list" | "set" | "update" | "delete";
+type operations = "get" | "list" | "set" | "update" | "delete" | "count";
 
 export default operations;

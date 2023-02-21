@@ -1,6 +1,7 @@
 import type CollectionClassConstructorArg from "../../types/collectionClassConstructorArg";
 
 import collectionGetRequest from "../../requests/collectionGetRequest";
+import collectionCountRequest from "../../requests/collectionCountRequest";
 
 class BaseCollection {
 	collectionName: string;
@@ -39,6 +40,13 @@ class BaseCollection {
 			offset: this._offset,
 			sortBy: this._sortByField || undefined,
 			sortOrder: this._sortOrder,
+		});
+	}
+
+	count() {
+		return collectionCountRequest({
+			filters: this._filters,
+			collectionName: this.collectionName,
 		});
 	}
 }
