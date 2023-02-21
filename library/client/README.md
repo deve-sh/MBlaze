@@ -216,3 +216,13 @@ db.collection("projects")
 		fieldToDelete: FieldValue.delete(),
 	});
 ```
+
+### Fallback URL
+
+In case you have multiple services that can address your MongoDB cluster in the backend, you can specify a `fallbackURL` property for the client SDK to automatically fall back on in case the primary backend URL fails to provide a response. It could happen due to any number of reasons.
+
+```javascript
+const db = new DB(BACKEND_MONGODB_ENDPOINT, {
+	fallbackURL: BACKEND_FALLBACK_MONGODB_ENDPOINT,
+});
+```
