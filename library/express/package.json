@@ -1,6 +1,6 @@
 {
 	"name": "mblaze.express",
-	"version": "3.0.2",
+	"version": "3.1.0",
 	"description": "",
 	"repository": "https://github.com/deve-sh/MBlaze/tree/main/library/express",
 	"main": "index.js",
