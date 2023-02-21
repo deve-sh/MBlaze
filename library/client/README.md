@@ -213,6 +213,17 @@ db.runTransaction((transaction) => {
 });
 ```
 
+### Selecting Specific Fields
+
+Currently selection of specific fields is only supported for list queries, will be adding it for single doc gets as well soon.
+
+```javascript
+await db
+	.collection("projects")
+	.select({ [fieldToInclude]: 1, [fieldToExclude]: 0 })
+	.get();
+```
+
 ### Field Values
 
 MBlaze Client SDK supports Firestore-like Field Value operations.
