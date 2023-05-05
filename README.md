@@ -27,6 +27,6 @@ All it takes to setup are a few steps.
 
 ### Good to Have
 
-Some good features that Firestore's SDK supports that can find their way into MBlaze.
+Some good features that Firestore's SDK supports can find their way into MBlaze.
 
 If you would like to contribute, feel free to fork the repo and raise a Pull Request for your feature.
